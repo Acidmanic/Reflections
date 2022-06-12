@@ -8,8 +8,8 @@
     <PropertyGroup>
         <!-- NuGet -->
         <Id>Reflection</Id>
-        <PackageId>Acidmanic.Utilities</PackageId>
-        <Version>1.0.0-b</Version>
+        <PackageId>Acidmanic.Utilities.Reflections</PackageId>
+        <Version>1.0.0-b1</Version>
         <Authors>Mani Moayedi</Authors>
         <Company>Acidmanic</Company>
         <PackageIcon>graphics/icon.png</PackageIcon>
