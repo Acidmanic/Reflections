@@ -96,6 +96,11 @@ namespace Acidmanic.Utilities.Reflection
                    t != typeof(char);
         }
 
+        public static bool IsEffectivelyPrimitive(Type type)
+        {
+            return !IsReferenceType(type);
+        }
+
         public static List<Type> EnumerateEntities(Type type)
         {
             var result = new List<Type>();
@@ -232,6 +237,11 @@ namespace Acidmanic.Utilities.Reflection
             return true;
         }
 
+        /// <summary>
+        /// Checks if given type is any kind of collection, array and etc. Then returns the type of elements of it.
+        /// </summary>
+        /// <param name="type">The type to be checked.</param>
+        /// <returns>The type of elements of collection/array or null if the type is not any kind of collection.</returns>
         public static Type GetElementType(Type type)
         {
             if (IsCollection(type))
@@ -249,6 +259,33 @@ namespace Acidmanic.Utilities.Reflection
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// Checks if type in question, is somehow an implementation or derivation of the given generic type 
+        /// </summary>
+        /// <param name="specific">The type in question.</param>
+        /// <typeparam name="TGeneric">The generic type.</typeparam>
+        /// <returns>True if specific type is a driven type of the generic type. Otherwise returns false.</returns>
+        public static bool IsSpecificOf<TGeneric>(Type specific)
+        {
+            return IsSpecificOf(specific, typeof(TGeneric));
+        }
+
+        /// <summary>
+        /// Checks if type in question, is somehow an implementation or derivation of the given generic type 
+        /// </summary>
+        /// <param name="specific">The type in question.</param>
+        /// <param name="generic">The generic type.</param>
+        /// <returns>True if specific type is a driven type of the generic type. Otherwise returns false.</returns>
+        public static bool IsSpecificOf(Type specific, Type generic)
+        {
+            return specific != null &&
+                   (
+                       (specific.IsGenericType && specific.GetGenericTypeDefinition() == generic)
+                       ||
+                       IsSpecificOf(specific.BaseType, generic)
+                   );
         }
     }
 }

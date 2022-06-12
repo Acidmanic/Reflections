@@ -309,17 +309,12 @@ namespace Acidmanic.Utilities.Reflection.TypeCenter
 
         public bool IsSpecificOf<TGeneric>(Type specific)
         {
-            return IsSpecificOf(specific, typeof(TGeneric));
+            return TypeCheck.IsSpecificOf<TGeneric>(specific);
         }
 
         public bool IsSpecificOf(Type specific, Type generic)
         {
-            return specific != null &&
-                   (
-                       (specific.IsGenericType && specific.GetGenericTypeDefinition() == generic)
-                       ||
-                       IsSpecificOf(specific.BaseType, generic)
-                   );
+            return TypeCheck.IsSpecificOf(specific, generic);
         }
 
         public bool Extends(Type t, Type @base)
