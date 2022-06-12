@@ -16,7 +16,7 @@
         <Description>Some useful reflection helper codes i use to use redaundantly.</Description>
         <Summary>Some useful reflection helper codes i use to use redaundantly.</Summary>
         <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
-        <RepositoryUrl>https://github.com/Acidmanic/EnTier</RepositoryUrl>
+        <RepositoryUrl>https://github.com/Acidmanic/Reflections</RepositoryUrl>
         <RepositoryType>git</RepositoryType>
         <PackageProjectUrl>https://github.com/Acidmanic/Reflections</PackageProjectUrl>
         <Title>Reflection Utilities</Title>
