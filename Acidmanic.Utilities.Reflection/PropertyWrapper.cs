@@ -4,12 +4,12 @@ using System.Reflection;
 namespace Acidmanic.Utilities.Reflection
 {
 
-    internal class PropertyWrapper:PropertyWrapper<object>
+    public class PropertyWrapper:PropertyWrapper<object>
     {
 
     }
 
-    internal class PropertyWrapper<T>
+    public class PropertyWrapper<T>
     {
 
 

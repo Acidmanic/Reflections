@@ -4,7 +4,7 @@ using System.Reflection;
 
 namespace Acidmanic.Utilities.Reflection.TypeCenter
 {
-    internal class TypeCenter
+    public class TypeCenter
     {
         public static List<T> GetTypeAttributes<T>(object obj)
         {

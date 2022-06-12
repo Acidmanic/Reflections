@@ -1,6 +1,6 @@
 namespace Acidmanic.Utilities.Reflection.TypeCenter
 {
-    internal class TypeCenterService : CachedTypeCenter
+    public class TypeCenterService : CachedTypeCenter
     {
         private static TypeCenterService _instance = null;
 

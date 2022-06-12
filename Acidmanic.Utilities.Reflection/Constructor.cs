@@ -6,7 +6,7 @@ namespace Acidmanic.Utilities.Reflection{
 
 
 
-    internal sealed class Constructor<T> 
+    public sealed class Constructor<T> 
     {
         
 

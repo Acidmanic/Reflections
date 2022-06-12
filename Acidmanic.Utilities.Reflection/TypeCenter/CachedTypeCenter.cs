@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Acidmanic.Utilities.Reflection.TypeCenter
 {
-    internal class CachedTypeCenter : TypeCenter
+    public class CachedTypeCenter : TypeCenter
     {
         private readonly List<MetaType> _types;
 
@@ -159,7 +159,7 @@ namespace Acidmanic.Utilities.Reflection.TypeCenter
 
             _types.Where(FilterPredicate).ToList()
                 .Where(predicate)
-                .Select(mt => mt.Instanciator)
+                .Select(mt => mt.Instantiator)
                 .ToList()
                 .ForEach(f => ret.Add(new Constructor<TCast>(() => (TCast) f())));
 
@@ -170,7 +170,7 @@ namespace Acidmanic.Utilities.Reflection.TypeCenter
         {
             var res = _types.Where(FilterPredicate).ToList()
                 .Where(predicate)
-                .Select(mt => mt.Instanciator)
+                .Select(mt => mt.Instantiator)
                 .FirstOrDefault();
 
             if (res != null)

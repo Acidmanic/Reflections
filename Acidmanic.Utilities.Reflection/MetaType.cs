@@ -8,25 +8,25 @@ namespace Acidmanic.Utilities.Reflection{
 
 
 
-    internal class MetaType{
+    public class MetaType{
 
 
         public Type Type {get;set;}
 
-        public Func<Object> Instanciator{get;set;}
+        public Func<Object> Instantiator{get;set;}
 
 
         public MetaType(Type type){
 
             Type = type;
 
-            Instanciator = () => Make(type);
+            Instantiator = () => Make(type);
         }
 
-        public MetaType(Type type,Func<Object> instanciator){
+        public MetaType(Type type,Func<Object> instantiator){
             Type = type;
 
-            Instanciator = instanciator;
+            Instantiator = instantiator;
         }
 
 
