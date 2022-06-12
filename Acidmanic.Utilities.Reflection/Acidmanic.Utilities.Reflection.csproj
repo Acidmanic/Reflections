@@ -1,7 +1,40 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard2.1</TargetFramework>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>netstandard2.1</TargetFramework>
+    </PropertyGroup>
+
+
+    <PropertyGroup>
+        <!-- NuGet -->
+        <Id>Reflection</Id>
+        <PackageId>Acidmanic.Utilities</PackageId>
+        <Version>1.0.0-b</Version>
+        <Authors>Mani Moayedi</Authors>
+        <Company>Acidmanic</Company>
+        <PackageIcon>graphics/icon.png</PackageIcon>
+        <Description>Some useful reflection helper codes i use to use redaundantly.</Description>
+        <Summary>Some useful reflection helper codes i use to use redaundantly.</Summary>
+        <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+        <RepositoryUrl>https://github.com/Acidmanic/EnTier</RepositoryUrl>
+        <RepositoryType>git</RepositoryType>
+        <PackageProjectUrl>https://github.com/Acidmanic/Reflections</PackageProjectUrl>
+        <Title>Reflection Utilities</Title>
+
+    </PropertyGroup>
+
+    <ItemGroup>
+        <!-- NuGet -->
+        <None Include="../Graphics/icon.png">
+            <Pack>true</Pack>
+            <PackagePath>graphics/EnTier.png</PackagePath>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Include="../LICENSE.txt">
+            <Pack>true</Pack>
+            <PackagePath>LICENSE.txt</PackagePath>
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
 </Project>
