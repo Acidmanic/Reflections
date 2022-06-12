@@ -27,7 +27,7 @@
         <!-- NuGet -->
         <None Include="../Graphics/icon.png">
             <Pack>true</Pack>
-            <PackagePath>graphics/EnTier.png</PackagePath>
+            <PackagePath>graphics/icon.png</PackagePath>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
         <None Include="../LICENSE.txt">
