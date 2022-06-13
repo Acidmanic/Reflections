@@ -23,11 +23,12 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
         public bool IsUnique { get; }
 
+        public bool IsAutoValued { get; }
 
         public bool IsCollection { get; }
 
 
-        public AccessNode(string name, Type type, PropertyInfo info, bool isUnique,int depth)
+        public AccessNode(string name, Type type, PropertyInfo info, bool isUnique, bool isAutoValued,int depth)
         {
             Name = name;
 
@@ -42,6 +43,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             Children = new List<AccessNode>();
 
             IsUnique = isUnique;
+
+            IsAutoValued = isAutoValued;
 
             Depth = depth;
         }
