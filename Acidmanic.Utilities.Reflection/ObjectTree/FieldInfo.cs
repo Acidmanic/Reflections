@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Acidmanic.Utilities.Reflection.Attributes;
@@ -41,6 +42,27 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             var attributes = property.GetCustomAttributes<TAttribute>();
 
             return attributes.Any();
+        }
+        /// <summary>
+        /// Gets Proper name by searching field name Attributes 
+        /// </summary>
+        /// <param name="property">A PropertyInfo Object pointing to the field</param>
+        /// <returns>Proper name for given field</returns>
+        public static string GetMappedName(PropertyInfo property)
+        {
+            string name = property.Name;
+            //TODO: Put naming conventions here   
+
+            List<MemberNameAttribute> attributes = new List<MemberNameAttribute>();
+
+            attributes.AddRange(property.GetCustomAttributes<MemberNameAttribute>());
+
+            if (attributes.Count > 0)
+            {
+                name = attributes.Last().Name;
+            }
+
+            return name;
         }
     }
 }

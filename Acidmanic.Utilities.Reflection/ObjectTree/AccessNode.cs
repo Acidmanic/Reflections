@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
+using Acidmanic.Utilities.Reflection.ObjectTree.Evaluators;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
@@ -17,8 +19,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
         public bool IsLeaf => Children.Count == 0;
 
-        protected PropertyInfo PropertyInfo { get; set; }
-
         public bool IsRoot => Parent == null;
 
         public bool IsUnique { get; }
@@ -27,12 +27,12 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
         public bool IsCollection { get; }
 
+        public IEvaluator Evaluator { get; }
 
-        public AccessNode(string name, Type type, PropertyInfo info, bool isUnique, bool isAutoValued,int depth)
+
+        public AccessNode(string name, Type type, IEvaluator evaluator, bool isUnique, bool isAutoValued, int depth)
         {
             Name = name;
-
-            PropertyInfo = info;
 
             IsCollection = TypeCheck.IsCollection(type);
 
@@ -47,12 +47,14 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             IsAutoValued = isAutoValued;
 
             Depth = depth;
+
+            Evaluator = evaluator;
         }
 
         public void Add(AccessNode child)
         {
             child.Parent = this;
-            
+
             Children.Add(child);
         }
 
@@ -66,31 +68,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return Parent.GetFullName() + "." + Name;
         }
 
-        public virtual void SetValue(object topLevelObject, object value)
-        {
-            var parentObject = Parent.GetSelfFromTopLevel(topLevelObject);
-
-            PropertyInfo.SetValue(parentObject, value);
-        }
-
-        public virtual object GetValue(object topLevelObject)
-        {
-            return GetSelfFromTopLevel(topLevelObject);
-        }
-
-        private object GetSelfFromTopLevel(object topLevelObject)
-        {
-            if (IsTopLevel(this))
-            {
-                return topLevelObject;
-            }
-
-            var parentObject = Parent.GetSelfFromTopLevel(topLevelObject);
-
-            var me = PropertyInfo.GetValue(parentObject);
-
-            return me;
-        }
 
         public List<AccessNode> EnumerateLeavesBelow()
         {
@@ -158,7 +135,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             return directLeaves;
         }
-        
+
         private AccessNode GetTopLevelNode(AccessNode node)
         {
             if (node.IsRoot)
