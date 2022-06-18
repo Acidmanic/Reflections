@@ -5,6 +5,8 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Acidmanic.Utilities.Reflection", "Acidmanic.Utilities.Reflection\Acidmanic.Utilities.Reflection.csproj", "{AF09DB22-C9A8-44C1-B8F7-F300741100FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Reflection.Test.Functional", "Reflection.Test.Functional\Reflection.Test.Functional.csproj", "{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,17 @@ Global
 		{AF09DB22-C9A8-44C1-B8F7-F300741100FF}.Release|x64.Build.0 = Release|Any CPU
 		{AF09DB22-C9A8-44C1-B8F7-F300741100FF}.Release|x86.ActiveCfg = Release|Any CPU
 		{AF09DB22-C9A8-44C1-B8F7-F300741100FF}.Release|x86.Build.0 = Release|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Debug|x64.Build.0 = Debug|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Debug|x86.Build.0 = Debug|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Release|x64.ActiveCfg = Release|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Release|x64.Build.0 = Release|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Release|x86.ActiveCfg = Release|Any CPU
+		{13F1891C-8951-4AAE-95F7-1CAD12FBBFC8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
