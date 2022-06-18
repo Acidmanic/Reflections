@@ -5,9 +5,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.ObjectTreeNaming
 {
     public class AccessNodeNameReference
     {
-
-
-
         public string GetNameForRoot(Type type)
         {
             return type.Name;
@@ -15,7 +12,12 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.ObjectTreeNaming
 
         public string GetNameForCollectable(Type type)
         {
-            return "[" + type.Name + "]";
+            return type.Name + "[-1]";
+        }
+
+        public string GetNameForCollectable(Type type, int index)
+        {
+            return type.Name + $"[{index}]";
         }
 
         public string GetNameForField(PropertyInfo propertyInfo)

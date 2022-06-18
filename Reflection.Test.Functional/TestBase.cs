@@ -38,6 +38,11 @@ namespace Reflection.Test.Functional
             }
         }
 
+        protected void PrintLine()
+        {
+            Console.WriteLine("----------------------------------------------------------------");
+        }
+        
         private void PrintNonEnumerableObject(string indent, object o)
         {
             Line(indent, 30);

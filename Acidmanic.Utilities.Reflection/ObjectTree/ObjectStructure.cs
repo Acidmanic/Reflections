@@ -81,7 +81,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                     var childName = new AccessNodeNameReference().GetNameForField(property);
 
-                    var child = new AccessNode("NONAMEYET", pType, evaluator, isUnique, isAuto, depth + 1);
+                    var child = new AccessNode(childName, pType, evaluator, isUnique, isAuto, depth + 1);
 
                     if (fullTree)
                     {

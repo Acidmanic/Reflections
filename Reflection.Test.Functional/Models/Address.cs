@@ -1,0 +1,11 @@
+namespace Reflection.Test.Functional.Models
+{
+    public class Address
+    {
+        public int Id { get; set; }
+        
+        public string Name { get; set; }
+        
+        public string WrittenAddress { get; set; }
+    }
+}

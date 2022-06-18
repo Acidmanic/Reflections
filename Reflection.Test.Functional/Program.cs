@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            new Tdd000UseAccessNode().Main();
         }
     }
 }

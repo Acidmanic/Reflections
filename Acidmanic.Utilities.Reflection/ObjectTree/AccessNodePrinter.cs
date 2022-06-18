@@ -9,10 +9,10 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             Print("", node);
         }
 
-        private void Print(string indent, AccessNode node)
+        private void Print(string indent, AccessNode node, bool fullTypeName = false)
         {
             Console.Write(indent + "Name: " + node.Name);
-            Console.Write(", Of Type: " + node.Type);
+            Console.Write(", Of Type: " + (fullTypeName ? node.Type.FullName : node.Type.Name));
             Console.Write(", Collectable: " + node.IsCollection);
             Console.Write(", Leaf: " + node.IsLeaf);
             Console.Write(", Root: " + node.IsRoot);
