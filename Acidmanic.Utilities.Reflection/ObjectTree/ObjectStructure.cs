@@ -30,7 +30,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             if (isCollection)
             {
-                AppendCollectionChildren(node);
+                AppendCollectionChildren(node,fullTree);
 
                 return;
             }
@@ -45,7 +45,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         }
 
 
-        private static void AppendCollectionChildren(AccessNode node)
+        private static void AppendCollectionChildren(AccessNode node, bool fullTree)
         {
             var evaluator = new CollectableEvaluator();
 
@@ -56,6 +56,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             var child = new AccessNode(childName, type, evaluator, false, false, node.Depth + 1);
 
             node.Add(child);
+            
+            AppendChildren(child,fullTree);
         }
 
 
