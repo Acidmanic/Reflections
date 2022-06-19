@@ -74,18 +74,18 @@ namespace Reflection.Test.Functional
 
             //var addresses = sEvaluator.Read("Person.Addresses");
 
-            var indexedPin1 = sEvaluator.Read("Person.Addresses.Address[0].Pins.Pin[0]");
-            var indexedPin2 = sEvaluator.Read("Person.Addresses.Address[1].Pins.Pin[0]");
-            var indexedPin3 = sEvaluator.Read("Person.Addresses.Address[1].Pins.Pin[1]");
-            var indexedPin4 = sEvaluator.Read("Person.Addresses.Address[-1].Pins.Pin[-1]");
+            var indexedPin = sEvaluator.Read("Person.Addresses.Address[1].Pins.Pin[0]");
 
+            PrintTitle("Before Writing:");
 
-            PrintTitle("Addressed Pins:");
+            PrintObject(indexedPin);
 
-            PrintObject(indexedPin1);
-            PrintObject(indexedPin2);
-            PrintObject(indexedPin3);
-            PrintObject(indexedPin4);
+            sEvaluator.Write("Person.Addresses.Address[1].Pins.Pin[0].Name","Maskharah!");
+            
+            PrintTitle("After Writing:");
+
+            PrintObject(indexedPin);
+            
         }
     }
 }

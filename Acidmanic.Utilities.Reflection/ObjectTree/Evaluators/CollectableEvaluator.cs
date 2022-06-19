@@ -81,14 +81,18 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
             return collection.ToList()[index];
         }
 
-        public void Write(object parentObject, int index, object value)
+        public void Write(object parentObject, int[] indexMap, object value)
         {
-            if (index < 0)
+            if (indexMap == null || indexMap.Length == 0)
             {
                 Write(parentObject, value);
 
                 return;
             }
+
+            var myDepth = _depthInformer();
+
+            var index = indexMap[myDepth];
 
             var collection = Wrap(parentObject);
 

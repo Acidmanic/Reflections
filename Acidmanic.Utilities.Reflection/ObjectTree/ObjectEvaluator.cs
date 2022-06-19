@@ -58,40 +58,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         }
 
 
-        private Stack<int> GetParentStack(Stack<int> stack, bool callerIsCollectable)
-        {
-            if (stack == null)
-            {
-                return null;
-            }
-
-            var parentStack = new Stack<int>(stack);
-
-            if (callerIsCollectable && parentStack.Count > 0)
-            {
-                parentStack.Pop();
-            }
-
-            return parentStack;
-        }
-
-        private object ReadLeaf(AccessNode leaf, object rootObject, int[] indexMap = null)
-        {
-            if (leaf.IsRoot)
-            {
-                return rootObject;
-            }
-
-            var parentObject = ReadLeaf(leaf.Parent, rootObject, indexMap);
-
-            if (leaf.Evaluator is CollectableEvaluator cEvaluator)
-            {
-                return cEvaluator.Read(parentObject, indexMap);
-            }
-
-            return leaf.Evaluator.Read(parentObject);
-        }
-
         /// <summary>
         /// Returns the number of objects are on the same Leaf in the actual data.
         /// </summary>
@@ -147,7 +113,24 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return false;
         }
 
-        private void WriteLeaf(AccessNode leaf, object rootObject, object value, int index = -1)
+        private object ReadLeaf(AccessNode leaf, object rootObject, int[] indexMap = null)
+        {
+            if (leaf.IsRoot)
+            {
+                return rootObject;
+            }
+
+            var parentObject = ReadLeaf(leaf.Parent, rootObject, indexMap);
+
+            if (leaf.Evaluator is CollectableEvaluator cEvaluator)
+            {
+                return cEvaluator.Read(parentObject, indexMap);
+            }
+
+            return leaf.Evaluator.Read(parentObject);
+        }
+
+        private void WriteLeaf(AccessNode leaf, object rootObject, object value, int[] indexMap = null)
         {
             if (leaf.IsRoot)
             {
@@ -157,18 +140,18 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             var parentNode = leaf.Parent;
 
-            var parentObject = ReadLeaf(parentNode, rootObject);
+            var parentObject = ReadLeaf(parentNode, rootObject, indexMap);
 
             if (parentObject == null)
             {
                 parentObject = new TypeAnalyzer().CreateObject(parentNode.Type, true);
 
-                WriteLeaf(parentNode, rootObject, parentObject);
+                WriteLeaf(parentNode, rootObject, parentObject, indexMap);
             }
 
             if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
-                cEvaluator.Write(parentNode, index, value);
+                cEvaluator.Write(parentNode, indexMap, value);
             }
             else
             {
@@ -198,17 +181,19 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return null;
         }
 
-        public void Write(FieldKey key, object value, FieldKeyComparisons comparison)
+        public void Write(FieldKey key, object value)
         {
-            int keyIndex = _nodesMap.IndexOfKey(key, comparison);
+            int keyIndex = _nodesMap.IndexOfKey(key, FieldKeyComparisons.IgnoreAllIndexes);
 
             if (keyIndex > -1)
             {
                 var leaf = _nodesMap.Nodes[keyIndex];
 
-                if (key.Last().Indexed)
+                var indexMap = key.GetIndexMap();
+
+                if (indexMap.Length > 0)
                 {
-                    WriteLeaf(leaf, _rootObject, value, key.Last().Index);
+                    WriteLeaf(leaf, _rootObject, value, indexMap);
                 }
 
                 WriteLeaf(leaf, _rootObject, value);
@@ -227,13 +212,13 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return null;
         }
 
-        public void Write(string address, object value, FieldKeyComparisons comparison = FieldKeyComparisons.Strict)
+        public void Write(string address, object value)
         {
             var key = FieldKey.Parse(address);
 
             if (key != null)
             {
-                Write(key, value, comparison);
+                Write(key, value);
             }
         }
 
