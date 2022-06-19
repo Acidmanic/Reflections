@@ -57,7 +57,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         {
         }
 
-        private object ReadLeaf(AccessNode leaf, object rootObject)
+        private object ReadLeaf(AccessNode leaf, object rootObject, int index = -1)
         {
             if (leaf.IsRoot)
             {
@@ -65,6 +65,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
 
             var parentObject = ReadLeaf(leaf.Parent, rootObject);
+
+            if (leaf.Evaluator is CollectableEvaluator cEvaluator)
+            {
+                return cEvaluator.Read(parentObject, index);
+            }
 
             return leaf.Evaluator.Read(parentObject);
         }
@@ -124,7 +129,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return false;
         }
 
-        private void WriteLeaf(AccessNode leaf, object rootObject, object value)
+        private void WriteLeaf(AccessNode leaf, object rootObject, object value, int index = -1)
         {
             if (leaf.IsRoot)
             {
@@ -143,29 +148,29 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                 WriteLeaf(parentNode, rootObject, parentObject);
             }
 
-            leaf.Evaluator.Write(parentObject, value);
-        }
-
-
-        public object Read(FieldKey key)
-        {
-            var address = key.ToString();
-
-            return Read(address);
-        }
-
-        public void Write(FieldKey key, object value)
-        {
-            var address = key.ToString();
-
-            Write(address, value);
-        }
-
-        public object Read(string address)
-        {
-            if (_nodesMap.ContainsKey(address))
+            if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
-                var leaf = _nodesMap.NodeByAddress(address);
+                cEvaluator.Write(parentNode, index, value);
+            }
+            else
+            {
+                leaf.Evaluator.Write(parentObject, value);
+            }
+        }
+
+
+        public object Read(FieldKey key, FieldKeyComparisons comparison = FieldKeyComparisons.Strict)
+        {
+            int keyIndex = _nodesMap.IndexOfKey(key, comparison);
+
+            if (keyIndex > -1)
+            {
+                var leaf = _nodesMap.Nodes[keyIndex];
+
+                if (key.Last().Indexed)
+                {
+                    return ReadLeaf(leaf, _rootObject, key.Last().Index);
+                }
 
                 return ReadLeaf(leaf, _rootObject);
             }
@@ -173,13 +178,42 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return null;
         }
 
-        public void Write(string address, object value)
+        public void Write(FieldKey key, object value, FieldKeyComparisons comparison)
         {
-            if (_nodesMap.ContainsKey(address))
+            int keyIndex = _nodesMap.IndexOfKey(key, comparison);
+
+            if (keyIndex > -1)
             {
-                var leaf = _nodesMap.NodeByAddress(address);
+                var leaf = _nodesMap.Nodes[keyIndex];
+
+                if (key.Last().Indexed)
+                {
+                    WriteLeaf(leaf, _rootObject, value, key.Last().Index);
+                }
 
                 WriteLeaf(leaf, _rootObject, value);
+            }
+        }
+
+        public object Read(string address, FieldKeyComparisons comparison = FieldKeyComparisons.Strict)
+        {
+            var key = FieldKey.Parse(address);
+
+            if (key != null)
+            {
+                return Read(key, comparison);
+            }
+
+            return null;
+        }
+
+        public void Write(string address, object value, FieldKeyComparisons comparison = FieldKeyComparisons.Strict)
+        {
+            var key = FieldKey.Parse(address);
+
+            if (key != null)
+            {
+                Write(key, value, comparison);
             }
         }
 
@@ -189,10 +223,9 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             foreach (var leaf in _leavesMap.Nodes)
             {
-
                 var key = _leavesMap.FieldKeyByNode(leaf);
-                
-                
+
+
                 var leafWasCollectable = ForEach(leaf, _rootObject, (index, value) => { });
 
                 if (!leafWasCollectable)

@@ -81,5 +81,20 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         public List<AccessNode> Nodes => Firsts;
         public List<FieldKey> Keys => Seconds;
         public List<string> Addresses => Thirds;
+
+        public int IndexOfKey(FieldKey key, FieldKeyComparisons comparison)
+        {
+            for (int i = 0; i < Seconds.Count; i++)
+            {
+                var item = Seconds[i];
+
+                if (item.Equals(key, comparison))
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
     }
 }

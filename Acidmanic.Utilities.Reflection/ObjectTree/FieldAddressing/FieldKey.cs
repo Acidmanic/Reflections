@@ -51,5 +51,61 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
 
             return result;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is FieldKey fieldKey)
+            {
+                return Equals(fieldKey, FieldKeyComparisons.Strict);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        public bool Equals(FieldKey obj)
+        {
+            return Equals(obj, FieldKeyComparisons.Strict);
+        }
+        
+        public bool Equals(FieldKey obj,FieldKeyComparisons comparison)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+            if (Count != obj.Count)
+            {
+                return false;
+            }
+
+            var considerIndexesInTheWay = comparison == FieldKeyComparisons.Strict 
+                                          || comparison == FieldKeyComparisons.IgnoreLastIndex;
+            var considerLastIndex = comparison == FieldKeyComparisons.Strict;
+
+            var lastIndex = Count - 1;
+            
+            for (int i = 0; i < lastIndex - 1; i++)
+            {
+                var s1 = this[i];
+                var s2 = obj[i];
+
+                if (!s1.Equals(s2,!considerIndexesInTheWay))
+                {
+                    return false;
+                }
+            }
+
+            return this[lastIndex].Equals(obj[lastIndex], considerLastIndex);
+        }
+
+        public bool EqualsIgnoreIndex(FieldKey value)
+        {
+            return Equals(value, FieldKeyComparisons.IgnoreAllIndexes);
+        }
     }
 }

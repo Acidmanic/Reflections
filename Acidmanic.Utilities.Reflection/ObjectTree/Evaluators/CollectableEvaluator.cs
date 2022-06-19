@@ -21,6 +21,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 
         public object Read(object parentObject, int index)
         {
+            if (index < 0)
+            {
+                return Read(parentObject);
+            }
+
             var collection = Wrap(parentObject);
 
             while (collection.Count <= index)
@@ -33,6 +38,13 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 
         public void Write(object parentObject, int index, object value)
         {
+            if (index < 0)
+            {
+                Write(parentObject, value);
+
+                return;
+            }
+
             var collection = Wrap(parentObject);
 
             while (collection.Count <= index)

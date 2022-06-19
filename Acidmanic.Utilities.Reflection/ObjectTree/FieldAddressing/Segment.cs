@@ -63,5 +63,50 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
 
             return null;
         }
+
+        public override bool Equals(object obj)
+        {
+            if (obj is Segment segment)
+            {
+                return Equals(segment, false);
+            }
+
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.ToString().GetHashCode();
+        }
+
+        public bool Equals(Segment obj)
+        {
+            return Equals(obj, false);
+        }
+        
+        public bool Equals(Segment obj, bool ignoreIndex)
+        {
+            if (obj == null)
+            {
+                return false;
+            }
+
+            if (obj.Name != Name)
+            {
+                return false;
+            }
+
+            if (obj.Indexed != Indexed)
+            {
+                return false;
+            }
+
+            if (ignoreIndex)
+            {
+                return true;
+            }
+
+            return Index == obj.Index;
+        }
     }
 }

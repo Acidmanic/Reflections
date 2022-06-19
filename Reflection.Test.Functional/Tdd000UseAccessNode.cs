@@ -32,6 +32,12 @@ namespace Reflection.Test.Functional
                         Id = 111,
                         Name = "FirstAddress",
                         WrittenAddress = "1---1-1--1-1-1--1"
+                    },
+                    new Address
+                    {
+                        Id = 112,
+                        Name = "SecondAddress",
+                        WrittenAddress = "-3--2-2-2-2--3-3-2--2"
                     }
                 }
             };
