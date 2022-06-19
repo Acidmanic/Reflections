@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using Acidmanic.Utilities.Reflection.Sets;
 
@@ -27,6 +28,36 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
             }
 
             var collection = Wrap(parentObject);
+
+            while (collection.Count <= index)
+            {
+                AddInstance(collection);
+            }
+
+            return collection.ToList()[index];
+        }
+
+        public object Read(object parentObject, Stack<int> indexes)
+        {
+            if (indexes == null || indexes.Count == 0)
+            {
+                return Read(parentObject);
+            }
+
+            var index = indexes.Pop();
+
+            var collection = Wrap(parentObject);
+
+            if (collection.Count == 0)
+            {
+                // No Adding in read process
+                return null;
+            }
+
+            if (index < 0)
+            {
+                index = collection.Count - 1;
+            }
 
             while (collection.Count <= index)
             {

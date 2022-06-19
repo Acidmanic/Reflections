@@ -70,30 +70,13 @@ namespace Reflection.Test.Functional
 
             PrintLine();
 
-            PrintTitle("Check for indexing access");
+            PrintTitle("Check for indexed access");
 
-            var addresses = sEvaluator.Read("Person.Addresses");
+            //var addresses = sEvaluator.Read("Person.Addresses");
 
-            var lastAddress = sEvaluator.Read("Person.Addresses.Address[-1]");
-
-            var indexedAddress = sEvaluator.Read("Person.Addresses.Address[0]");
-
-            var indexedPin1 = sEvaluator.Read("Person.Addresses.Address[-1].Pins.Pin[0]");
+            var indexedPin1 = sEvaluator.Read("Person.Addresses.Address[0].Pins.Pin[0]");
             var indexedPin2 = sEvaluator.Read("Person.Addresses.Address[1].Pins.Pin[1]");
 
-            Console.WriteLine("All Addresses.");
-
-            PrintObject(addresses);
-
-            Console.WriteLine("LastAddress.");
-
-            PrintObject(lastAddress);
-
-            PrintLine();
-
-            Console.WriteLine("Indexed Address.");
-
-            PrintObject(indexedAddress);
 
             PrintTitle("Addressed Pins:");
 

@@ -71,41 +71,59 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
         {
             return Equals(obj, FieldKeyComparisons.Strict);
         }
-        
-        public bool Equals(FieldKey obj,FieldKeyComparisons comparison)
+
+        public bool Equals(FieldKey obj, FieldKeyComparisons comparison)
         {
             if (obj == null)
             {
                 return false;
             }
+
             if (Count != obj.Count)
             {
                 return false;
             }
 
-            var considerIndexesInTheWay = comparison == FieldKeyComparisons.Strict 
+            var considerIndexesInTheWay = comparison == FieldKeyComparisons.Strict
                                           || comparison == FieldKeyComparisons.IgnoreLastIndex;
             var considerLastIndex = comparison == FieldKeyComparisons.Strict;
 
             var lastIndex = Count - 1;
-            
-            for (int i = 0; i < lastIndex - 1; i++)
+
+            for (int i = 0; i < lastIndex ; i++)
             {
                 var s1 = this[i];
                 var s2 = obj[i];
 
-                if (!s1.Equals(s2,!considerIndexesInTheWay))
+                if (!s1.Equals(s2, !considerIndexesInTheWay))
                 {
                     return false;
                 }
             }
 
-            return this[lastIndex].Equals(obj[lastIndex], considerLastIndex);
+            return this[lastIndex].Equals(obj[lastIndex], !considerLastIndex);
         }
 
         public bool EqualsIgnoreIndex(FieldKey value)
         {
             return Equals(value, FieldKeyComparisons.IgnoreAllIndexes);
+        }
+
+        public Stack<int> GetIndexesStack()
+        {
+            Stack<int> indexes = new Stack<int>();
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                var segment = this[i];
+
+                if (segment.Indexed)
+                {
+                    indexes.Push(segment.Index);
+                }
+            }
+
+            return indexes;
         }
     }
 }

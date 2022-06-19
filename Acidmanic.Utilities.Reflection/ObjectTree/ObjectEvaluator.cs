@@ -57,7 +57,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         {
         }
 
-        private object ReadLeaf(AccessNode leaf, object rootObject, int index = -1)
+        private object ReadLeaf(AccessNode leaf, object rootObject, Stack<int> indexes = null)
         {
             if (leaf.IsRoot)
             {
@@ -68,7 +68,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
-                return cEvaluator.Read(parentObject, index);
+                return cEvaluator.Read(parentObject, indexes);
             }
 
             return leaf.Evaluator.Read(parentObject);
@@ -159,17 +159,19 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         }
 
 
-        public object Read(FieldKey key, FieldKeyComparisons comparison = FieldKeyComparisons.Strict)
+        public object Read(FieldKey key)
         {
-            int keyIndex = _nodesMap.IndexOfKey(key, comparison);
+            int keyIndex = _nodesMap.IndexOfKey(key, FieldKeyComparisons.IgnoreAllIndexes);
 
             if (keyIndex > -1)
             {
                 var leaf = _nodesMap.Nodes[keyIndex];
 
-                if (key.Last().Indexed)
+                var indexStack = key.GetIndexesStack();
+
+                if (indexStack.Count > 0)
                 {
-                    return ReadLeaf(leaf, _rootObject, key.Last().Index);
+                    return ReadLeaf(leaf, _rootObject, indexStack);
                 }
 
                 return ReadLeaf(leaf, _rootObject);
@@ -195,13 +197,13 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
         }
 
-        public object Read(string address, FieldKeyComparisons comparison = FieldKeyComparisons.Strict)
+        public object Read(string address)
         {
             var key = FieldKey.Parse(address);
 
             if (key != null)
             {
-                return Read(key, comparison);
+                return Read(key);
             }
 
             return null;
