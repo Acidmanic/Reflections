@@ -63,9 +63,9 @@ namespace Reflection.Test.Functional
             // var dEvaluator = new ObjectEvaluator(person.GetType());
             // standard.ForEach(d => dEvaluator.Write(d.Identifier,d.Value));
 
-            var standard = sEvaluator.ToStandardFlatData();
+            //var standard = sEvaluator.ToStandardFlatData();
 
-            standard.ForEach(d => Console.WriteLine($"{d.Identifier}: {d.Value}"));
+            //standard.ForEach(d => Console.WriteLine($"{d.Identifier}: {d.Value}"));
 
 
             PrintLine();
@@ -75,13 +75,17 @@ namespace Reflection.Test.Functional
             //var addresses = sEvaluator.Read("Person.Addresses");
 
             var indexedPin1 = sEvaluator.Read("Person.Addresses.Address[0].Pins.Pin[0]");
-            var indexedPin2 = sEvaluator.Read("Person.Addresses.Address[1].Pins.Pin[1]");
+            var indexedPin2 = sEvaluator.Read("Person.Addresses.Address[1].Pins.Pin[0]");
+            var indexedPin3 = sEvaluator.Read("Person.Addresses.Address[1].Pins.Pin[1]");
+            var indexedPin4 = sEvaluator.Read("Person.Addresses.Address[-1].Pins.Pin[-1]");
 
 
             PrintTitle("Addressed Pins:");
 
             PrintObject(indexedPin1);
             PrintObject(indexedPin2);
+            PrintObject(indexedPin3);
+            PrintObject(indexedPin4);
         }
     }
 }

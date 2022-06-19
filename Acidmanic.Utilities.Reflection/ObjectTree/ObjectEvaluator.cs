@@ -57,18 +57,36 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         {
         }
 
-        private object ReadLeaf(AccessNode leaf, object rootObject, Stack<int> indexes = null)
+
+        private Stack<int> GetParentStack(Stack<int> stack, bool callerIsCollectable)
+        {
+            if (stack == null)
+            {
+                return null;
+            }
+
+            var parentStack = new Stack<int>(stack);
+
+            if (callerIsCollectable && parentStack.Count > 0)
+            {
+                parentStack.Pop();
+            }
+
+            return parentStack;
+        }
+
+        private object ReadLeaf(AccessNode leaf, object rootObject, int[] indexMap = null)
         {
             if (leaf.IsRoot)
             {
                 return rootObject;
             }
 
-            var parentObject = ReadLeaf(leaf.Parent, rootObject);
+            var parentObject = ReadLeaf(leaf.Parent, rootObject, indexMap);
 
             if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
-                return cEvaluator.Read(parentObject, indexes);
+                return cEvaluator.Read(parentObject, indexMap);
             }
 
             return leaf.Evaluator.Read(parentObject);
@@ -167,11 +185,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             {
                 var leaf = _nodesMap.Nodes[keyIndex];
 
-                var indexStack = key.GetIndexesStack();
+                var indexMap = key.GetIndexMap();
 
-                if (indexStack.Count > 0)
+                if (indexMap.Length > 0)
                 {
-                    return ReadLeaf(leaf, _rootObject, indexStack);
+                    return ReadLeaf(leaf, _rootObject, indexMap);
                 }
 
                 return ReadLeaf(leaf, _rootObject);

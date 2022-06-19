@@ -8,6 +8,18 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 {
     public class CollectableEvaluator : IEvaluator
     {
+        private Func<int> _depthInformer = () => -1;
+
+        public CollectableEvaluator()
+        {
+        }
+
+
+        public void SetNodeDepthInformer(Func<int> depthInformer)
+        {
+            _depthInformer = depthInformer;
+        }
+
         public object Read(object parentObject)
         {
             var collection = Wrap(parentObject);
@@ -37,14 +49,16 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
             return collection.ToList()[index];
         }
 
-        public object Read(object parentObject, Stack<int> indexes)
+        public object Read(object parentObject, int[] indexMap)
         {
-            if (indexes == null || indexes.Count == 0)
+            if (indexMap == null || indexMap.Length == 0)
             {
                 return Read(parentObject);
             }
 
-            var index = indexes.Pop();
+            var myDepth = _depthInformer();
+
+            var index = indexMap[myDepth];
 
             var collection = Wrap(parentObject);
 

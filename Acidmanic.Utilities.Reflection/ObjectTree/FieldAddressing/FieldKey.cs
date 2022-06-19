@@ -125,5 +125,26 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
 
             return indexes;
         }
+
+        public int[] GetIndexMap()
+        {
+            var map = new int[Count];
+            
+            for (int i = 0; i < this.Count; i++)
+            {
+                var segment = this[i];
+
+                if (segment.Indexed)
+                {
+                    map[i] = segment.Index;
+                }
+                else
+                {
+                    map[i] = -1;
+                }
+            }
+
+            return map;
+        }
     }
 }
