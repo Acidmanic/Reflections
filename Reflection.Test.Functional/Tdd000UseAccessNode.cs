@@ -75,6 +75,44 @@ namespace Reflection.Test.Functional
             }
             
             PrintObject(personClone);
+            
+            
+            PrintTitle("Standard Object");
+            
+            
+            var sEvaluator = new ObjectEvaluator(person);
+            
+            var dEvaluator = new ObjectEvaluator(person.GetType());
+
+            var standard = sEvaluator.ToStandardFlatData();
+            
+            standard.ForEach( d => Console.WriteLine($"{d.Identifier}: {d.Value}"));
+            
+            standard.ForEach(d => dEvaluator.Write(d.Identifier,d.Value));
+            
+            PrintLine();
+            
+            PrintTitle("Check for indexing access");
+
+            var addresses = sEvaluator.Read("Person.Addresses");
+            
+            var lastAddress = sEvaluator.Read("Person.Addresses.Address[-1]");
+            
+            var indexedAddress = sEvaluator.Read("Person.Addresses.Address[0]");
+            
+            Console.WriteLine("All Addresses.");
+            
+            PrintObject(addresses);
+
+            Console.WriteLine("LastAddress.");
+            
+            PrintObject(lastAddress);
+            
+            PrintLine();
+            
+            Console.WriteLine("Indexed Address.");
+            
+            PrintObject(indexedAddress);
         }
 
         private object ReadLeaf(AccessNode leaf, object rootObject)
@@ -108,6 +146,8 @@ namespace Reflection.Test.Functional
                 WriteLeaf(parentNode,rootObject,parentObject);
             }
             leaf.Evaluator.Write(parentObject, value);
+            
+            PrintLine();
         }
     }
 }

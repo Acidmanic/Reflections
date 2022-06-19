@@ -42,7 +42,16 @@ namespace Reflection.Test.Functional
         {
             Console.WriteLine("----------------------------------------------------------------");
         }
-        
+
+        protected void PrintTitle(string title)
+        {
+            PrintLine();
+
+            Console.WriteLine("\t\t\t" + title);
+
+            PrintLine();
+        }
+
         private void PrintNonEnumerableObject(string indent, object o)
         {
             Line(indent, 30);

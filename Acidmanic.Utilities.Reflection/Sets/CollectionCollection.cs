@@ -14,7 +14,6 @@ namespace Acidmanic.Utilities.Reflection.Sets
         private readonly MethodInfo _add;
         private readonly MethodInfo _clear;
         private readonly MethodInfo _contains;
-        private readonly MethodInfo _copyTo;
         private readonly MethodInfo _remove;
 
         public CollectionCollection(Type collectionType) :
@@ -36,7 +35,6 @@ namespace Acidmanic.Utilities.Reflection.Sets
             _add = genericType.GetMethod("Add", new Type[] {elementType});
             _clear = genericType.GetMethod("Clear", new Type[] { });
             _contains = genericType.GetMethod("Contains", new Type[] {elementType});
-            _copyTo = genericType.GetMethod("CopyTo", new Type[] {Array.CreateInstance(elementType,0).GetType(), typeof(int)});
             _remove = genericType.GetMethod("Remove", new Type[] {elementType});
 
             _collection = collection;
@@ -105,7 +103,31 @@ namespace Acidmanic.Utilities.Reflection.Sets
 
         public void CopyTo(object[] array, int arrayIndex)
         {
-            _copyTo.Invoke(_collection, new object[] {array, arrayIndex});
+            if (array == null)
+            {
+                throw new ArgumentNullException();
+            }
+
+            if (arrayIndex < 0)
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            int availableLength = array.Length - arrayIndex;
+
+            if (availableLength < this.Count)
+            {
+                throw new ArgumentException("There is not enough room to copy the values into array.");
+            }
+
+            var index = arrayIndex;
+
+            foreach (var item in _collection)
+            {
+                array[index] = item;
+
+                index++;
+            }
         }
 
         public bool Remove(object item)

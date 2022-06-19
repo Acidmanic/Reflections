@@ -16,6 +16,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
             Index = -1;
 
             Indexed = false;
+
+            Name = name;
         }
 
         public Segment(string name, int index)

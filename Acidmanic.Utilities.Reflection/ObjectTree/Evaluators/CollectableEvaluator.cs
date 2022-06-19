@@ -83,5 +83,12 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 
             return new CollectionCollection((ICollection) collectionObject);
         }
+
+        public int Count(object parentObject)
+        {
+            var collection = Wrap(parentObject);
+
+            return collection.Count;
+        }
     }
 }
