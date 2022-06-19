@@ -16,6 +16,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         private readonly AddressKeyNodeMap _leavesMap;
         private readonly AddressKeyNodeMap _nodesMap;
 
+
+        public AccessNode RootNode => _rootNode;
+
+        public object RootObject => _rootObject;
+
         private ObjectEvaluator(AccessNode rootNode, object rootObject)
         {
             _rootNode = rootNode;
@@ -153,7 +158,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
-                cEvaluator.Write(parentNode, indexMap, value);
+                cEvaluator.Write(parentObject, indexMap, value);
             }
             else
             {
@@ -230,8 +235,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
 
-            EnumerateStandardLeaves(_rootNode,rootKey,standardFlatData);
-            
+            EnumerateStandardLeaves(_rootNode, rootKey, standardFlatData);
+
             return standardFlatData;
         }
 
@@ -266,11 +271,10 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                         foreach (var item in collection)
                         {
-
                             var childSegment = Segment.Parse(collectableChildName);
 
                             childSegment.Index = index;
-                            
+
                             var childKey = nodeKey.Append(childSegment);
 
                             index += 1;

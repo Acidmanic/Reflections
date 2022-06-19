@@ -59,13 +59,7 @@ namespace Reflection.Test.Functional
             PrintTitle("Standard Object");
 
             var sEvaluator = new ObjectEvaluator(person);
-
-            // var dEvaluator = new ObjectEvaluator(person.GetType());
-            // standard.ForEach(d => dEvaluator.Write(d.Identifier,d.Value));
-
             
-
-
             PrintLine();
 
             PrintTitle("Check for indexed access");
@@ -91,6 +85,14 @@ namespace Reflection.Test.Functional
 
             standard.ForEach(d => Console.WriteLine($"{d.Identifier}: {d.Value}"));
             
+            
+            PrintTitle("Verify Cloning");
+            
+            var dEvaluator = new ObjectEvaluator(person.GetType());
+
+            standard.ForEach(d => dEvaluator.Write(d.Identifier,d.Value));
+
+            PrintObject(dEvaluator.RootObject);
         }
     }
 }
