@@ -63,9 +63,7 @@ namespace Reflection.Test.Functional
             // var dEvaluator = new ObjectEvaluator(person.GetType());
             // standard.ForEach(d => dEvaluator.Write(d.Identifier,d.Value));
 
-            //var standard = sEvaluator.ToStandardFlatData();
-
-            //standard.ForEach(d => Console.WriteLine($"{d.Identifier}: {d.Value}"));
+            
 
 
             PrintLine();
@@ -85,6 +83,13 @@ namespace Reflection.Test.Functional
             PrintTitle("After Writing:");
 
             PrintObject(indexedPin);
+            
+            
+            PrintTitle("Verify Standard leaves");
+            
+            var standard = sEvaluator.ToStandardFlatData();
+
+            standard.ForEach(d => Console.WriteLine($"{d.Identifier}: {d.Value}"));
             
         }
     }

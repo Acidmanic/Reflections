@@ -4,6 +4,14 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
 {
     public class FieldKey : List<Segment>
     {
+        public FieldKey()
+        {
+        }
+
+        public FieldKey(IEnumerable<Segment> collection) : base(collection)
+        {
+        }
+
         public override string ToString()
         {
             var address = "";
@@ -146,5 +154,16 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
 
             return map;
         }
+
+        public FieldKey Append(Segment segment)
+        {
+            var appended = new FieldKey(this); 
+
+            appended.Add(segment);
+            
+            return appended;
+        }
+        
+        
     }
 }

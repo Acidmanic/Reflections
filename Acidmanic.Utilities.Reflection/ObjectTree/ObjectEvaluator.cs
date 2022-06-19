@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Acidmanic.Utilities.Reflection.DataSource;
 using Acidmanic.Utilities.Reflection.ObjectTree.Evaluators;
 using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
+using Acidmanic.Utilities.Reflection.Sets;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
@@ -226,28 +228,71 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         {
             var standardFlatData = new List<DataPoint>();
 
-            foreach (var leaf in _leavesMap.Nodes)
+            var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
+
+            EnumerateStandardLeaves(_rootNode,rootKey,standardFlatData);
+            
+            return standardFlatData;
+        }
+
+
+        private void EnumerateStandardLeaves(AccessNode node, FieldKey nodeKey, List<DataPoint> result)
+        {
+            if (node.IsLeaf)
             {
-                var key = _leavesMap.FieldKeyByNode(leaf);
+                var value = Read(nodeKey);
 
-
-                var leafWasCollectable = ForEach(leaf, _rootObject, (index, value) => { });
-
-                if (!leafWasCollectable)
+                result.Add(new DataPoint
                 {
-                    var value = ReadLeaf(leaf, _rootObject);
+                    Identifier = nodeKey.ToString(),
+                    Value = value
+                });
+            }
+            else
+            {
+                if (node.IsCollection)
+                {
+                    var collectionObject = Read(nodeKey);
 
-                    var address = key.ToString();
-
-                    standardFlatData.Add(new DataPoint
+                    if (collectionObject != null && collectionObject is ICollection coll)
                     {
-                        Identifier = address,
-                        Value = value
-                    });
+                        var collection = new CollectionCollection(coll);
+
+                        int index = 0;
+
+                        var collectableChildNode = node.GetChildren().First();
+
+                        var collectableChildName = collectableChildNode.Name;
+
+                        foreach (var item in collection)
+                        {
+
+                            var childSegment = Segment.Parse(collectableChildName);
+
+                            childSegment.Index = index;
+                            
+                            var childKey = nodeKey.Append(childSegment);
+
+                            index += 1;
+
+                            EnumerateStandardLeaves(collectableChildNode, childKey, result);
+                        }
+                    }
+                }
+                else
+                {
+                    // Normal Middle node (Field node)
+
+                    var children = node.GetChildren();
+
+                    foreach (var child in children)
+                    {
+                        var childKey = nodeKey.Append(new Segment(child.Name));
+
+                        EnumerateStandardLeaves(child, childKey, result);
+                    }
                 }
             }
-
-            return standardFlatData;
         }
     }
 }
