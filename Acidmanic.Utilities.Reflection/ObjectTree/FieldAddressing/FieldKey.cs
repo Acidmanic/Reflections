@@ -163,7 +163,28 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
             
             return appended;
         }
-        
+
+        public FieldKey UpLevel()
+        {
+            var upper = new FieldKey(this);
+            
+            if (Count > 0)
+            {
+                upper.RemoveAt(upper.Count - 1);
+            }
+
+            return upper;
+        }
+
+        public Segment TerminalSegment()
+        {
+            if (Count > 0)
+            {
+                return this[this.Count - 1];
+            }
+
+            return null;
+        }
         
     }
 }

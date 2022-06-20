@@ -83,7 +83,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
         {
             return Equals(obj, false);
         }
-        
+
         public bool Equals(Segment obj, bool ignoreIndex)
         {
             if (obj == null)
@@ -107,6 +107,16 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
             }
 
             return Index == obj.Index;
+        }
+
+        public Segment Clone()
+        {
+            if (Indexed)
+            {
+                return new Segment(Name, Index);
+            }
+
+            return new Segment(Name);
         }
     }
 }

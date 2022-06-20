@@ -22,6 +22,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
         public object RootObject => _rootObject;
 
+        public AddressKeyNodeMap Map => _nodesMap;
+
         private ObjectEvaluator(AccessNode rootNode, object rootObject)
         {
             _rootNode = rootNode;
@@ -74,6 +76,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
 
             var parentObject = ReadLeaf(leaf.Parent, rootObject, indexMap);
+
+            if (parentObject == null)
+            {
+                return null;
+            }
 
             if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
@@ -175,6 +182,21 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
         }
 
+        public TModel As<TModel>()
+        {
+            if (_rootObject != null && _rootObject is TModel model)
+            {
+                return model;
+            }
+
+            return default;
+        }
+
+        public void LoadStandardData(Record record)
+        {
+            record.ForEach(dp => Write(dp.Identifier, dp.Value));
+        }
+
         public Record ToStandardFlatData()
         {
             var standardFlatData = new Record();
@@ -185,7 +207,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             return standardFlatData;
         }
-
 
         private void EnumerateStandardLeaves(AccessNode node, FieldKey nodeKey, List<DataPoint> result)
         {
