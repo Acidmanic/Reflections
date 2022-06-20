@@ -1,4 +1,4 @@
-namespace Acidmanic.Utilities.Reflection.DataSource
+namespace Acidmanic.Utilities.Reflection.ObjectTree.StandardData
 {
     public class DataPoint
     {

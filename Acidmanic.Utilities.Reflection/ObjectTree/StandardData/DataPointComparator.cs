@@ -1,7 +1,6 @@
 using System.Collections.Generic;
-using Acidmanic.Utilities.Reflection.DataSource;
 
-namespace Meadow.DataSource
+namespace Acidmanic.Utilities.Reflection.ObjectTree.StandardData
 {
     public class DataPointComparator : Comparer<DataPoint>
     {

@@ -5,6 +5,7 @@ using System.Linq;
 using Acidmanic.Utilities.Reflection.DataSource;
 using Acidmanic.Utilities.Reflection.ObjectTree.Evaluators;
 using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
+using Acidmanic.Utilities.Reflection.ObjectTree.StandardData;
 using Acidmanic.Utilities.Reflection.Sets;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree
@@ -64,61 +65,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         {
         }
 
-
-        /// <summary>
-        /// Returns the number of objects are on the same Leaf in the actual data.
-        /// </summary>
-        /// <returns>1 for non-collectable leaves, and the Count/Length of items in the collection,
-        /// for collectable leaves.</returns>
-        private int GetInstancesCountOnLeaf(AccessNode leaf, object rootObject)
-        {
-            if (leaf.Parent == null)
-            {
-                throw new Exception(
-                    "Disfigured Node: A Collectable node can nut be root node too, It must have a Collection parent.");
-            }
-
-            if (leaf.Evaluator is CollectableEvaluator colEvaluator)
-            {
-                var parentObject = ReadLeaf(leaf.Parent, rootObject);
-
-                return colEvaluator.Count(parentObject);
-            }
-
-            return ReadLeaf(leaf, rootObject) == null ? 0 : 1;
-        }
-
-        /// <summary>
-        /// This Method will walk through the collection, if the given node is collectable.
-        /// Otherwise nothing will happen.
-        /// </summary>
-        /// <returns> True, if the node was collectable, false otherwise </returns>
-        private bool ForEach(AccessNode leaf, object rootObject, Action<int, object> expression)
-        {
-            if (leaf.Parent == null)
-            {
-                throw new Exception(
-                    "Disfigured Node: A Collectable node can nut be root node too, It must have a Collection parent.");
-            }
-
-            if (leaf.Evaluator is CollectableEvaluator colEvaluator)
-            {
-                var parentObject = ReadLeaf(leaf.Parent, rootObject);
-
-                var count = colEvaluator.Count(parentObject);
-
-                for (int i = 0; i < count; i++)
-                {
-                    var objectAt = colEvaluator.Read(parentObject, i);
-
-                    expression(i, objectAt);
-                }
-
-                return true;
-            }
-
-            return false;
-        }
 
         private object ReadLeaf(AccessNode leaf, object rootObject, int[] indexMap = null)
         {
@@ -229,9 +175,9 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
         }
 
-        public List<DataPoint> ToStandardFlatData()
+        public Record ToStandardFlatData()
         {
-            var standardFlatData = new List<DataPoint>();
+            var standardFlatData = new Record();
 
             var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
 
