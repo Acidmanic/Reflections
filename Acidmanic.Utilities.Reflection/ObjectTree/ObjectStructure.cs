@@ -8,6 +8,15 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
     public class ObjectStructure
     {
+
+        public static AccessNode CreateStructure<TModel>(bool fullTree)
+        {
+            var type = typeof(TModel);
+
+            return CreateStructure(type, fullTree);
+        }
+        
+        
         public static AccessNode CreateStructure(Type type, bool fullTree)
         {
             var evaluator = new RootObjectEvaluator();

@@ -17,7 +17,7 @@ namespace Acidmanic.Utilities.Reflection.Sets
         private readonly MethodInfo _remove;
 
         public CollectionCollection(Type collectionType) :
-            this(collectionType.GetElementType(), (ICollection) new TypeAnalyzer().BlindInstantiate(collectionType))
+            this(collectionType.GetElementType(), (ICollection) new ObjectInstantiator().BlindInstantiate(collectionType))
         {
         }
 

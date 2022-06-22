@@ -58,7 +58,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
         public ObjectEvaluator(Type type) : this(
             ObjectStructure.CreateStructure(type, true),
-            new TypeAnalyzer().CreateObject(type, true))
+            new ObjectInstantiator().CreateObject(type, true))
         {
         }
 
@@ -104,7 +104,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             if (parentObject == null)
             {
-                parentObject = new TypeAnalyzer().CreateObject(parentNode.Type, true);
+                parentObject = new ObjectInstantiator().CreateObject(parentNode.Type, true);
 
                 WriteLeaf(parentNode, rootObject, parentObject, indexMap);
             }

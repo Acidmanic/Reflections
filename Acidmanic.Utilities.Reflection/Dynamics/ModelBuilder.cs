@@ -78,7 +78,7 @@ namespace Acidmanic.Utilities.Reflection.Dynamics
         {
             var type = Build();
 
-            return new TypeAnalyzer().CreateObject(type);
+            return new ObjectInstantiator().CreateObject(type);
         }
     }
 }

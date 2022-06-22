@@ -26,7 +26,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 
             if (collection.Count == 0)
             {
-                collection.Add(new TypeAnalyzer().CreateObject(collection.ElementType, true));
+                collection.Add(new ObjectInstantiator().CreateObject(collection.ElementType, true));
             }
 
             return collection.Last();
@@ -106,7 +106,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 
         private void AddInstance(CollectionCollection collection)
         {
-            collection.Add(new TypeAnalyzer().CreateObject(collection.ElementType, true));
+            collection.Add(new ObjectInstantiator().CreateObject(collection.ElementType, true));
         }
 
         public void Write(object parentObject, object value)

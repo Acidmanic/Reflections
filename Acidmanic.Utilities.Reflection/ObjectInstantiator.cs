@@ -1,15 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using Acidmanic.Utilities.Reflection.Attributes;
 
-namespace Acidmanic.Utilities.Reflection.ObjectTree
+namespace Acidmanic.Utilities.Reflection
 {
-    public class TypeAnalyzer
+    public class ObjectInstantiator
     {
-        public IDataOwnerNameProvider DataOwnerNameProvider { get; set; } = new PluralDataOwnerNameProvider();
 
         public TOut CreateObject<TOut>(bool fullTree)
         {
