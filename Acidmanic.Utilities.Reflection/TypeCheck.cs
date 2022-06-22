@@ -17,7 +17,19 @@ namespace Acidmanic.Utilities.Reflection
 
         public static bool InheritsFrom<TSuper>(Type type)
         {
-            return Extends<TSuper>(type) || Implements<TSuper>(type);
+            var super = typeof(Type);
+
+            return InheritsFrom(super, type);
+        }
+
+        public static bool InheritsFrom(Type super, Type driven)
+        {
+            if (super.IsInterface)
+            {
+                return Implements(super, driven);
+            }
+
+            return Extends(super, driven);
         }
 
         public static bool Implements<TInterface>(Type type)

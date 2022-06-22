@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd000UseAccessNode().Main();
+            new Tdd002MustBeAbleToConstructICollection().Main();
         }
     }
 }

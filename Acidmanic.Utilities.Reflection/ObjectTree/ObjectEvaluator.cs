@@ -34,6 +34,17 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             IndexNodes(_rootNode);
         }
+        
+        public ObjectEvaluator(Type type) : this(
+            ObjectStructure.CreateStructure(type, true),
+            new ObjectInstantiator().CreateObject(type, true))
+        {
+        }
+
+        public ObjectEvaluator(object rootObject) :
+            this(ObjectStructure.CreateStructure(rootObject.GetType(), true), rootObject)
+        {
+        }
 
         private void IndexNodes(AccessNode node)
         {
@@ -54,19 +65,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                 children.ForEach(IndexNodes);
             }
         }
-
-
-        public ObjectEvaluator(Type type) : this(
-            ObjectStructure.CreateStructure(type, true),
-            new ObjectInstantiator().CreateObject(type, true))
-        {
-        }
-
-        public ObjectEvaluator(object rootObject) :
-            this(ObjectStructure.CreateStructure(rootObject.GetType(), true), rootObject)
-        {
-        }
-
 
         private object ReadLeaf(AccessNode leaf, object rootObject, int[] indexMap = null)
         {
