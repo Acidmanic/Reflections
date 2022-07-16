@@ -1,3 +1,5 @@
+using Acidmanic.Utilities.Reflection.ObjectTree;
+
 namespace Acidmanic.Utilities.Reflection.Extensions
 {
     public static  class ObjectExtensions
@@ -18,6 +20,27 @@ namespace Acidmanic.Utilities.Reflection.Extensions
             }
 
             return o1.Equals(o2);
+        }
+
+
+        public static object Clone(this object value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            var type = value.GetType();
+            
+            var srcEvaluator = new ObjectEvaluator(value);
+
+            var standardData = srcEvaluator.ToStandardFlatData();
+            
+            var dstEvaluator = new ObjectEvaluator(type);
+            
+            dstEvaluator.LoadStandardData(standardData);
+
+            return dstEvaluator.RootObject;
         }
     }
 }
