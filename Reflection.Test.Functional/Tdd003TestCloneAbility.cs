@@ -1,14 +1,14 @@
+using System;
 using System.Collections.Generic;
 using Acidmanic.Utilities.Reflection.Extensions;
 using Reflection.Test.Functional.Models;
 
 namespace Reflection.Test.Functional
 {
-    public class Tdd003TestCloneAbility:TestBase
+    public class Tdd003TestCloneAbility : TestBase
     {
         public override void Main()
         {
-            
             var person = new Person
             {
                 Addresses = new List<Address>
@@ -39,10 +39,14 @@ namespace Reflection.Test.Functional
             };
 
 
-
             var myClone = person.Clone();
-            
+
             PrintObject(myClone);
+
+
+            var equality = person.AreEquivalentsWith(myClone);
+
+            Console.WriteLine("Clone and original are " + (equality ? "" : " NOT ") + "Equal");
         }
     }
 }
