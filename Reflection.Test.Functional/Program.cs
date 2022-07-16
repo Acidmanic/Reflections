@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd002MustBeAbleToConstructICollection().Main();
+            new Tdd003TestCloneAbility().Main();
         }
     }
 }
