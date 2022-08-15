@@ -5,6 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using Acidmanic.Utilities.Reflection.Attributes;
 using Acidmanic.Utilities.Reflection.ObjectTree;
+using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
 
 namespace Acidmanic.Utilities.Reflection
 {
@@ -21,7 +22,7 @@ namespace Acidmanic.Utilities.Reflection
 
 
         public IDataOwnerNameProvider DataOwnerNameProvider { get; }
-        
+
         public string GetFieldName<TModel>(MemberExpression expression, bool fullTree = false)
         {
             if (expression.Member.MemberType == MemberTypes.Property)
@@ -30,9 +31,8 @@ namespace Acidmanic.Utilities.Reflection
 
                 var name = expression.Member.Name;
 
-                
-                
-                if (counts.ContainsKey(name) && counts[name] > 1  )
+
+                if (counts.ContainsKey(name) && counts[name] > 1)
                 {
                     name = DataOwnerNameProvider.GetNameForOwnerType(expression.Member.DeclaringType) + "." + name;
                 }
@@ -42,17 +42,41 @@ namespace Acidmanic.Utilities.Reflection
 
             return null;
         }
-        
-        private Dictionary<string, int> CountLeafMemberNames<TModel>(bool fullTree )
+
+        public FieldKey GetFieldKey<TModel>(MemberExpression expression, bool fullTree = false)
+        {
+            var key = new FieldKey();
+
+            if (expression.Member.MemberType == MemberTypes.Property)
+            {
+                var counts = CountLeafMemberNames<TModel>(fullTree);
+
+                var name = expression.Member.Name;
+
+
+                if (counts.ContainsKey(name) && counts[name] > 1)
+                {
+                    var parentName = DataOwnerNameProvider.GetNameForOwnerType(expression.Member.DeclaringType);
+
+                    key.Append(new Segment(parentName));
+                }
+
+                key.Append(new Segment(name));
+            }
+
+            return key;
+        }
+
+        private Dictionary<string, int> CountLeafMemberNames<TModel>(bool fullTree)
         {
             var result = new Dictionary<string, int>();
 
-            CountLeafMemberNames(typeof(TModel), result,fullTree);
+            CountLeafMemberNames(typeof(TModel), result, fullTree);
 
             return result;
         }
 
-        private void CountLeafMemberNames(Type type, Dictionary<string, int> result,bool fullTree)
+        private void CountLeafMemberNames(Type type, Dictionary<string, int> result, bool fullTree)
         {
             //TODO: cache here
             var properties = type.GetProperties();
@@ -67,7 +91,7 @@ namespace Acidmanic.Utilities.Reflection
                 {
                     if (fullTree)
                     {
-                        CountLeafMemberNames(pType, result,true);   
+                        CountLeafMemberNames(pType, result, true);
                     }
                 }
                 else
@@ -83,7 +107,7 @@ namespace Acidmanic.Utilities.Reflection
                 }
             }
         }
-        
+
         public string GetMappedName(PropertyInfo property)
         {
             string name = property.Name;
@@ -100,6 +124,5 @@ namespace Acidmanic.Utilities.Reflection
 
             return name;
         }
-
     }
 }
