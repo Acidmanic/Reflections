@@ -22,15 +22,17 @@ namespace Acidmanic.Utilities.Reflection
 
         public IDataOwnerNameProvider DataOwnerNameProvider { get; }
         
-        public string GetFieldName<TModel>(MemberExpression expression)
+        public string GetFieldName<TModel>(MemberExpression expression, bool fullTree = false)
         {
             if (expression.Member.MemberType == MemberTypes.Property)
             {
-                var counts = CountLeafMemberNames<TModel>();
+                var counts = CountLeafMemberNames<TModel>(fullTree);
 
                 var name = expression.Member.Name;
 
-                if (counts.ContainsKey(name) && counts[name] > 1)
+                
+                
+                if (counts.ContainsKey(name) && counts[name] > 1  )
                 {
                     name = DataOwnerNameProvider.GetNameForOwnerType(expression.Member.DeclaringType) + "." + name;
                 }
@@ -41,16 +43,16 @@ namespace Acidmanic.Utilities.Reflection
             return null;
         }
         
-        private Dictionary<string, int> CountLeafMemberNames<TModel>()
+        private Dictionary<string, int> CountLeafMemberNames<TModel>(bool fullTree )
         {
             var result = new Dictionary<string, int>();
 
-            CountLeafMemberNames(typeof(TModel), result);
+            CountLeafMemberNames(typeof(TModel), result,fullTree);
 
             return result;
         }
 
-        private void CountLeafMemberNames(Type type, Dictionary<string, int> result)
+        private void CountLeafMemberNames(Type type, Dictionary<string, int> result,bool fullTree)
         {
             //TODO: cache here
             var properties = type.GetProperties();
@@ -63,7 +65,10 @@ namespace Acidmanic.Utilities.Reflection
 
                 if (refType)
                 {
-                    CountLeafMemberNames(pType, result);
+                    if (fullTree)
+                    {
+                        CountLeafMemberNames(pType, result,true);   
+                    }
                 }
                 else
                 {

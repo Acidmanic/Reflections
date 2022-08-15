@@ -59,8 +59,8 @@ any member using a so called "Standard" address/key. You can instantiate ```Obje
  The first method can be used to read all members and their sub-members into a flat structure, from an existing model. on the other hand
  with second method, you can create an object from scratch and set the value for any of it's member and their sub-members easily.
  
- |  Method/Property  | Description |
- |:--------:|:----------:|
+ |  Method/Property            | Description |
+ |:-------------------------------------------------------|:------------------:|
  |``` object Read(string address)```| This method reads the value from the ObjectEvaluator's target object, by the given address.|
  |``` void Write(string address,object value)``` | Writes the given value at given address, into the ObjectEvaluator's target object|
  |```TModel As<TModel>()```| Returns the ObjectEvaluator's target object casted into given type.|
