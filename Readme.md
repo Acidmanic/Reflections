@@ -150,3 +150,17 @@ Type Helpers
 ------------
 
 Is A static class providing some useful methods for a given Type.
+
+
+
+Tests
+=======
+
+
+```RAssert```
+------------
+
+This class works somehow like most _Assert_ implementations in test frameworks. 
+By providing a ```Equal(object,object)``` method. This method performs a deep member-by-member equality check 
+between to given objects, disregarding their type. It checks to see if two given 
+objects have the same corresponding members, and if all of these members have the same value.   
