@@ -163,4 +163,23 @@ Tests
 This class works somehow like most _Assert_ implementations in test frameworks. 
 By providing a ```Equal(object,object)``` method. This method performs a deep member-by-member equality check 
 between to given objects, disregarding their type. It checks to see if two given 
-objects have the same corresponding members, and if all of these members have the same value.   
+objects have the same corresponding members, and if all of these members have the same value.
+
+
+
+Object Extension Methods
+===================
+
+
+Using this library, you will get some extension methods added to any object. these methods are useful
+ for comparing and copying objects without knowing their type. These methods will explore the whole object-tree 
+ to perform their tasks.
+ 
+ 
+ |  Method/Property            | Description |
+ |:-------------------------------------------------------|:------------------:|
+ |``` AreEqualAsNullables(o)```| will be true if both are null or both are not null. |
+ |``` Clone()``` | will create a new instance of given object fully filled with source objects values. |
+ |```AreEquivalentsWith(o)```| compares all properties of source and given object in whole tree, and returns true if all are equal.|
+ | ```CopyInto(o)``` | copies all data from source object into given object through the whole structure. This method can take any number of standard addresses to be excluded from this process for cases that you want copy all data except a number of fields. |
+ 
