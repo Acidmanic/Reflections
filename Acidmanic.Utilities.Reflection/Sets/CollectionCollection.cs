@@ -21,8 +21,7 @@ namespace Acidmanic.Utilities.Reflection.Sets
         {
         }
 
-        public CollectionCollection(ICollection collection) : this(collection.GetType().GenericTypeArguments[0],
-            collection)
+        public CollectionCollection(ICollection collection) : this(TypeCheck.GetElementType(collection.GetType()), collection)
         {
         }
 
