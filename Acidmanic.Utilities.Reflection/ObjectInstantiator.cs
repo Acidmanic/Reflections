@@ -74,7 +74,7 @@ namespace Acidmanic.Utilities.Reflection
 
             if (TypeCheck.IsCollection(type))
             {
-                var elementType = type.GenericTypeArguments[0];
+                var elementType = TypeCheck.GetElementType(type);
                 
                 var listType = typeof(List<>).MakeGenericType(elementType);
                 

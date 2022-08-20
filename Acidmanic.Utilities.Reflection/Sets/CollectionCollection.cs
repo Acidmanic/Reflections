@@ -36,6 +36,12 @@ namespace Acidmanic.Utilities.Reflection.Sets
             _contains = genericType.GetMethod("Contains", new Type[] {elementType});
             _remove = genericType.GetMethod("Remove", new Type[] {elementType});
 
+            if (_add == null || _clear == null || _contains == null || _remove == null)
+            {
+                throw new Exception("Your collection is not currently supported to be modified using" +
+                                    " Reflection library. If it's an array, please consider using a List<> instead.");
+            }
+
             _collection = collection;
         }
 
