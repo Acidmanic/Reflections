@@ -132,7 +132,7 @@ For this example, the addresses of nodes will be as following:
 |:---------------------------------------------------------|:--------------------------:|:-----:|
 | Parent                                                   |    Parent                  |       |
 | Parent.Id                                                |    int                     | [T]   |
-| Parent.Children[-1]                                      |    List<Child>             |       |
+| Parent.Children                                          |    List<Child>             |       |
 | Parent.Children[n]                     *                 |    Child                   |       |
 | Parent.Children[n].Name                *                 |    string                  | [T]   |
 | Parent.Children[n].Id                  *                 |    int                     | [T]   | 
@@ -140,7 +140,8 @@ For this example, the addresses of nodes will be as following:
 | Parent.Information.Title                                 |    string                  | [T]   |
 | Parent.Information.Content                               |    string                  | [T]   | 
 
-__```*```__: If in actual data, there is a n'th member in Parent.Children list.
+__```*```__: If in actual data, there is a n'th member in Parent.Children list. but for a type without ay data, 
+n would be -1.  ```Parent.Children[n]```, still would be of type ```Child```, but such member does not exists yet.
 
 
 Type Helpers
