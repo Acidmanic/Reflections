@@ -17,11 +17,13 @@ namespace Acidmanic.Utilities.Reflection.Sets
         private readonly MethodInfo _remove;
 
         public CollectionCollection(Type collectionType) :
-            this(collectionType.GetElementType(), (ICollection) new ObjectInstantiator().BlindInstantiate(collectionType))
+            this(collectionType.GetElementType(),
+                (ICollection) new ObjectInstantiator().BlindInstantiate(collectionType))
         {
         }
 
-        public CollectionCollection(ICollection collection) : this(TypeCheck.GetElementType(collection.GetType()), collection)
+        public CollectionCollection(ICollection collection) : this(TypeCheck.GetElementType(collection.GetType()),
+            collection)
         {
         }
 
@@ -45,34 +47,6 @@ namespace Acidmanic.Utilities.Reflection.Sets
             _collection = collection;
         }
 
-
-        private class ObjectEnumerator : IEnumerator<object>
-        {
-            private readonly IEnumerator _enumerator;
-
-            public ObjectEnumerator(ICollection collection)
-            {
-                _enumerator = collection.GetEnumerator();
-            }
-
-            public bool MoveNext()
-            {
-                return _enumerator.MoveNext();
-            }
-
-            public void Reset()
-            {
-                _enumerator.Reset();
-            }
-
-            public object Current => _enumerator.Current;
-
-            object IEnumerator.Current => Current;
-
-            public void Dispose()
-            {
-            }
-        }
 
         public IEnumerator<object> GetEnumerator()
         {
@@ -151,5 +125,7 @@ namespace Acidmanic.Utilities.Reflection.Sets
         public bool IsReadOnly => false;
 
         public Type ElementType => _elementType;
+
+        
     }
 }

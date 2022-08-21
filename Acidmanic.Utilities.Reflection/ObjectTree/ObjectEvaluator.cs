@@ -34,7 +34,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             IndexNodes(_rootNode);
         }
-        
+
         public ObjectEvaluator(Type type) : this(
             ObjectStructure.CreateStructure(type, true),
             new ObjectInstantiator().CreateObject(type, true))
@@ -85,6 +85,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                 return cEvaluator.Read(parentObject, indexMap);
             }
 
+            //Read Arrays here i guess
+
             return leaf.Evaluator.Read(parentObject);
         }
 
@@ -110,11 +112,13 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
                 cEvaluator.Write(parentObject, indexMap, value);
+
+                return;
             }
-            else
-            {
-                leaf.Evaluator.Write(parentObject, value);
-            }
+
+            // Write array evaluator here i guess
+
+            leaf.Evaluator.Write(parentObject, value);
         }
 
 
@@ -152,6 +156,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                 if (indexMap.Length > 0)
                 {
                     WriteLeaf(leaf, _rootObject, value, indexMap);
+                    
+                    return;
                 }
 
                 WriteLeaf(leaf, _rootObject, value);
@@ -224,9 +230,9 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                 {
                     var collectionObject = Read(nodeKey);
 
-                    if (collectionObject != null && collectionObject is ICollection coll)
+                    if (collectionObject != null && collectionObject is IList list)
                     {
-                        var collection = new CollectionCollection(coll);
+                        var collection = new ListWrap(list);
 
                         int index = 0;
 

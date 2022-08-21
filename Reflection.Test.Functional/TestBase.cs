@@ -56,7 +56,23 @@ namespace Reflection.Test.Functional
         {
             Line(indent, 30);
 
+
+            if (o == null)
+            {
+                Console.WriteLine(indent + "NULL");
+
+                return;
+            }
+
             var type = o.GetType();
+
+
+            if (!TypeCheck.IsReferenceType(type))
+            {
+                Console.WriteLine(indent + o);
+
+                return;
+            }
 
             var properties = type.GetProperties();
 

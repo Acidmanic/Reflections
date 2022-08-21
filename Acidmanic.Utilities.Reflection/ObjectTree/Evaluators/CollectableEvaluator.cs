@@ -94,17 +94,17 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 
             var index = indexMap[myDepth];
 
-            var collection = Wrap(parentObject);
+            var wrap = Wrap(parentObject);
 
-            while (collection.Count <= index)
+            while (wrap.Count <= index)
             {
-                AddInstance(collection);
+                AddInstance(wrap);
             }
 
-            collection.ToList()[index] = value;
+            wrap[index] = value;
         }
 
-        private void AddInstance(CollectionCollection collection)
+        private void AddInstance(ListWrap collection)
         {
             collection.Add(new ObjectInstantiator().CreateObject(collection.ElementType, true));
         }
@@ -128,7 +128,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
             collection.Add(value);
         }
 
-        private CollectionCollection Wrap(object collectionObject)
+        
+        private ListWrap Wrap(object collectionObject)
         {
             if (collectionObject == null)
             {
@@ -142,7 +143,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
                 );
             }
 
-            return new CollectionCollection((ICollection) collectionObject);
+            return new ListWrap(collectionObject);
         }
 
         public int Count(object parentObject)

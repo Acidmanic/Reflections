@@ -30,7 +30,16 @@ namespace Acidmanic.Utilities.Reflection
         {
             var constructor = FindConcreteConstructor(type);
 
-            //return type.GetConstructor(new Type[] { })?.Invoke(new object[] { });
+            if (type == typeof(string))
+            {
+                return default(string);
+            }
+
+            if (type.IsValueType)
+            {
+                return Activator.CreateInstance(type);
+            }
+
             return constructor.Invoke();
         }
 
@@ -75,9 +84,9 @@ namespace Acidmanic.Utilities.Reflection
             if (TypeCheck.IsCollection(type))
             {
                 var elementType = TypeCheck.GetElementType(type);
-                
+
                 var listType = typeof(List<>).MakeGenericType(elementType);
-                
+
                 var constructor = listType.GetConstructor(new Type[] { });
 
                 if (constructor != null)
@@ -85,6 +94,7 @@ namespace Acidmanic.Utilities.Reflection
                     return () => constructor.Invoke(new object[] { });
                 }
             }
+
             if (!type.IsInterface && !type.IsAbstract)
             {
                 var constructor = type.GetConstructor(new Type[] { });
@@ -106,7 +116,7 @@ namespace Acidmanic.Utilities.Reflection
             availableTypes.AddRange(Assembly.GetCallingAssembly().GetAvailableTypes());
             availableTypes.AddRange(Assembly.GetEntryAssembly().GetAvailableTypes());
 
-            return availableTypes.Where(driven => TypeCheck.InheritsFrom(type, driven) && driven!=type)
+            return availableTypes.Where(driven => TypeCheck.InheritsFrom(type, driven) && driven != type)
                 .ToList();
         }
 
