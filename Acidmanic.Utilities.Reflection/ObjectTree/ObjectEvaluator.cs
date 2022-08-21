@@ -201,7 +201,12 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             record.ForEach(dp => Write(dp.Identifier, dp.Value));
         }
 
-        public Record ToStandardFlatData()
+        public Record ToStandardFlatData(bool directLeavesOnly = false)
+        {
+            return directLeavesOnly ? GetStandardFlatDataForDirectLeaves() : GetStandardFlatDataFullTree();
+        }
+
+        private Record GetStandardFlatDataFullTree()
         {
             var standardFlatData = new Record();
 
@@ -212,7 +217,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return standardFlatData;
         }
 
-        public Record GetStandardFlatDataForDirectLeaves()
+        private Record GetStandardFlatDataForDirectLeaves()
         {
             var standardFlatData = new Record();
 

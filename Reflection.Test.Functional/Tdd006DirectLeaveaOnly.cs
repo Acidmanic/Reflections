@@ -48,7 +48,7 @@ namespace Reflection.Test.Functional
             var evaluator = new ObjectEvaluator(a);
 
             
-            var selected = evaluator.GetStandardFlatDataForDirectLeaves();
+            var selected = evaluator.ToStandardFlatData(true);
 
 
             selected.ForEach(dp => Console.WriteLine(dp.ToString()));
