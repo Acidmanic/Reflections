@@ -156,7 +156,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                 if (indexMap.Length > 0)
                 {
                     WriteLeaf(leaf, _rootObject, value, indexMap);
-                    
+
                     return;
                 }
 
@@ -208,6 +208,54 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
 
             EnumerateStandardLeaves(_rootNode, rootKey, standardFlatData);
+
+            return standardFlatData;
+        }
+
+        public Record GetStandardFlatDataForDirectLeaves()
+        {
+            var standardFlatData = new Record();
+
+            var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
+
+            if (_rootNode.IsCollection)
+            {
+                if (_rootObject != null && _rootObject is IList list)
+                {
+                    var wrapped = new ListWrap(list);
+
+                    var collectableChildNode = _rootNode.GetChildren().First();
+
+                    var collectableChildName = collectableChildNode.Name;
+
+
+                    for (int i = 0; i < wrapped.Count; i++)
+                    {
+                        var value = wrapped[i];
+
+                        var childSegment = Segment.Parse(collectableChildName);
+
+                        childSegment.Index = i;
+
+                        var childKey = rootKey.Append(childSegment);
+
+                        standardFlatData.Add(childKey.ToString(), value);
+                    }
+                }
+            }
+            else
+            {
+                var leaves = _rootNode.GetDirectLeaves();
+
+                foreach (var leaf in leaves)
+                {
+                    var childKey = rootKey.Append(new Segment(leaf.Name));
+
+                    var value = leaf.Evaluator.Read(_rootObject);
+
+                    standardFlatData.Add(childKey.ToString(), value);
+                }
+            }
 
             return standardFlatData;
         }

@@ -12,26 +12,28 @@ namespace Reflection.Test.Functional
 {
     public class Tdd006DirectLeaveaOnly : TestBase
     {
-
         class A
         {
             public int Id { get; set; }
-            
+
             public B B { get; set; }
+
+            public string Name { get; set; }
         }
 
         class B
         {
             public int Id { get; set; }
-            
+
             public string[] Coats { get; set; }
         }
-        
+
         public override void Main()
         {
             var a = new A
             {
                 Id = 1,
+                Name = "Direct",
                 B = new B
                 {
                     Id = 2,
@@ -42,21 +44,14 @@ namespace Reflection.Test.Functional
                     }
                 }
             };
-            
+
             var evaluator = new ObjectEvaluator(a);
 
-            var standardData = evaluator.ToStandardFlatData();
-
-            var selected = standardData.Where(dp =>
-            {
-                var node = evaluator.Map.NodeByAddress(dp.Identifier);
-
-
-                return node!=null && node.IsLeaf && !node.IsRoot && node.Parent == evaluator.RootNode;
-            });
             
-            PrintObject(selected.ToList());
-        }
+            var selected = evaluator.GetStandardFlatDataForDirectLeaves();
 
+
+            selected.ForEach(dp => Console.WriteLine(dp.ToString()));
+        }
     }
 }
