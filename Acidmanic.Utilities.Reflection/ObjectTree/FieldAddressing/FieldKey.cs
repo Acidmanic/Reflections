@@ -92,6 +92,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing
                 return false;
             }
 
+            if (Count == 0)
+            {
+                //Two empty keys
+                return true;
+            }
             var considerIndexesInTheWay = comparison == FieldKeyComparisons.Strict
                                           || comparison == FieldKeyComparisons.IgnoreLastIndex;
             var considerLastIndex = comparison == FieldKeyComparisons.Strict;
