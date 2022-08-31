@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd008FieldKeyBeingKeyAble().Main();
+            new Tdd007CloneCopyTest().Main();
         }
     }
 }

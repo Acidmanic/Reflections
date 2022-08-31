@@ -20,7 +20,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 
         public void Write(object parentObject, object value)
         {
-            var forceCasted = Convert.ChangeType(value, _propertyInfo.PropertyType);
+            var forceCasted = value==null?null: Convert.ChangeType(value, _propertyInfo.PropertyType);
             
             _propertyInfo.SetValue(parentObject, forceCasted);
         }
