@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Acidmanic.Utilities.Reflection.ObjectTree;
 using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
 
 namespace Acidmanic.Utilities.Reflection.FieldInclusion
@@ -11,11 +10,9 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
     {
         private readonly List<FieldKey> _excludedNames;
         private readonly Dictionary<FieldKey, string> _renames;
-        private readonly bool _fullTree;
 
-        public FiledManipulationMarker(bool fullTree)
+        public FiledManipulationMarker()
         {
-            _fullTree = fullTree;
             _excludedNames = new List<FieldKey>();
             _renames = new Dictionary<FieldKey, string>();
         }
@@ -30,8 +27,10 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
 
         public IFieldInclusionMarker<TModel> Exclude(FieldKey key)
         {
-            _excludedNames.Add(key);
-
+            if (key != null)
+            {
+                _excludedNames.Add(key);   
+            }
             return this;
         }
 
@@ -52,7 +51,7 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
 
         public IFieldInclusionMarker<TModel> UnExclude(FieldKey key)
         {
-            if (_excludedNames.Contains(key))
+            if (key!=null && _excludedNames.Contains(key))
             {
                 _excludedNames.Remove(key);
             }
@@ -77,8 +76,10 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
 
         public IFieldInclusionMarker<TModel> Rename(FieldKey key, string newName)
         {
-            _renames.Add(key, newName);
-
+            if (key != null)
+            {
+                _renames.Add(key, newName);    
+            }
             return this;
         }
 
@@ -100,7 +101,7 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
 
         public IFieldInclusionMarker<TModel> UnRename(FieldKey key)
         {
-            if (_renames.ContainsKey(key))
+            if (key != null && _renames.ContainsKey(key))
             {
                 _renames.Remove(key);
             }
@@ -124,6 +125,10 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
 
         public bool IsIncluded(FieldKey key)
         {
+            if (key == null)
+            {
+                return false;
+            }
             return !_excludedNames.Contains(key);
         }
 
@@ -154,7 +159,7 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
 
         public string GetPracticalName(FieldKey key)
         {
-            if (_renames.ContainsKey(key))
+            if (key!=null && _renames.ContainsKey(key))
             {
                 return _renames[key];
             }

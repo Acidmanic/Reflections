@@ -43,9 +43,31 @@ namespace Acidmanic.Utilities.Reflection
 
                 nameList.Add(propertyName);
 
-                memberExpression = memberExpression.Expression as MemberExpression;
+                var parentExpression = memberExpression.Expression;
+
+
+                if (parentExpression == null)
+                {
+                    break;
+                }
+                if (parentExpression is MemberExpression memberParent)
+                {
+                    memberExpression = memberParent;
+                }else if (parentExpression is MethodCallExpression callParent)
+                {
+                    nameList.Add("[-1]");
+
+                    break;
+                }
+                else 
+                {
+                    nameList.Add(parentExpression.Type.Name);
+
+                    break;
+                }
             }
 
+            
             return nameList;
         }
 
@@ -54,7 +76,15 @@ namespace Acidmanic.Utilities.Reflection
         {
             var nameList = GetPropertySelectionPath(expr);
             
+            if (nameList.Count < 1)
+            {
+                return null;
+            }
+            
+            nameList.RemoveAt(nameList.Count-1);
+            
             nameList.Reverse();
+
 
             var evaluator = new ObjectEvaluator(typeof(T));
 
