@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Acidmanic.Utilities.Reflection;
 using Acidmanic.Utilities.Reflection.FieldInclusion;
 using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
 
@@ -47,6 +48,7 @@ namespace Reflection.Test.Functional
             Console.WriteLine("MiddleItem.Inner.Name is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Inner.Name));
             Console.WriteLine("MiddleItem.Inner is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Inner));
             Console.WriteLine("MiddleItem.Name is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Name));
+            
         }
     }
 }
