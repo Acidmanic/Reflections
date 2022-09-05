@@ -4,6 +4,10 @@
     <ProjectReference Include="..\Acidmanic.Utilities.Reflection\Acidmanic.Utilities.Reflection.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="CorePluralizer" Version="1.0.0" />
+  </ItemGroup>
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
