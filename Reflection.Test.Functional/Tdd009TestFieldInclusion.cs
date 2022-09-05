@@ -43,8 +43,10 @@ namespace Reflection.Test.Functional
             var fieldMarker = new FiledManipulationMarker<Outer>();
 
             fieldMarker.Exclude(o => o.MiddleItem.Inner.Name);
-            
-            
+
+            Console.WriteLine("MiddleItem.Inner.Name is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Inner.Name));
+            Console.WriteLine("MiddleItem.Inner is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Inner));
+            Console.WriteLine("MiddleItem.Name is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Name));
         }
     }
 }
