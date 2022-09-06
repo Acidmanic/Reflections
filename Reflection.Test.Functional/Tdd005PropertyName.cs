@@ -28,9 +28,7 @@ namespace Reflection.Test.Functional
         {
             var expression = JustCreateTheShit<A,int>(a => a.B.Id);
              
-            var memberExpression = (MemberExpression) expression.Body;
-
-            var name = new MemberOwnerUtilities(new PluralDataOwnerNameProvider()).GetFieldName<A>(memberExpression,true);
+            var name = MemberOwnerUtilities.GetAddress(expression);
 
             Console.WriteLine(name);
         }

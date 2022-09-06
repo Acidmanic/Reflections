@@ -77,6 +77,8 @@ namespace Reflection.Test.Functional
             standardAType.ForEach(Console.WriteLine);
             
             PrintLine();
+
+            a.B = null;
             
             var aClone = a.Clone();
             

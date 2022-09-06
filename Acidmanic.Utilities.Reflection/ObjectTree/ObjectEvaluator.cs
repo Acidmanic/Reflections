@@ -322,5 +322,22 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                 }
             }
         }
+
+
+        public AccessNode FindCorrespondingNode(AccessNode foreignNode)
+        {
+            var fullName = foreignNode.GetFullName();
+
+            return Map.Nodes.FirstOrDefault(n => n.GetFullName() == fullName);
+        }
+
+        public FieldKey FindCorrespondingKey(AccessNode foreignNode)
+        {
+            var fullName = foreignNode.GetFullName();
+
+            return Map.Nodes.Where(n => n.GetFullName() == fullName)
+                .Select(n => Map.FieldKeyByNode(n))
+                .FirstOrDefault();
+        }
     }
 }

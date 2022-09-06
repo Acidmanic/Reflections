@@ -2,8 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
-using Acidmanic.Utilities.Reflection.Attributes;
 using Acidmanic.Utilities.Reflection.ObjectTree;
 using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
 
@@ -13,116 +11,105 @@ namespace Acidmanic.Utilities.Reflection
     /// This class provides functionalities to deal with a class as a data and it's fields as the members of this data
     /// and their standard or costume (provided using attributes) names 
     /// </summary>
-    public class MemberOwnerUtilities
+    public static class MemberOwnerUtilities
     {
-        public MemberOwnerUtilities(IDataOwnerNameProvider dataOwnerNameProvider)
+
+
+        public static string GetAddress<T, TP>(Expression<Func<T, TP>> expr)
         {
-            DataOwnerNameProvider = dataOwnerNameProvider;
+            return GetKey(expr)?.ToString();
+        }
+        
+        public static List<string> GetPropertySelectionPath<T, TP>(Expression<Func<T, TP>> expr)
+        {
+            MemberExpression memberExpression;
+            
+            switch (expr.Body.NodeType)
+            {
+                case ExpressionType.Convert:
+                case ExpressionType.ConvertChecked:
+                    memberExpression = ((expr.Body is UnaryExpression ue) ? ue.Operand : null) as MemberExpression;
+                    break;
+                default:
+                    memberExpression = expr.Body as MemberExpression;
+                    break;
+            }
+
+            var nameList = new List<string>();
+
+            while (memberExpression != null)
+            {
+                string propertyName = memberExpression.Member.Name;
+
+                nameList.Add(propertyName);
+
+                var parentExpression = memberExpression.Expression;
+
+
+                if (parentExpression == null)
+                {
+                    break;
+                }
+                if (parentExpression is MemberExpression memberParent)
+                {
+                    memberExpression = memberParent;
+                }else if (parentExpression is MethodCallExpression callParent)
+                {
+                    nameList.Add("[-1]");
+
+                    break;
+                }
+                else 
+                {
+                    nameList.Add(parentExpression.Type.Name);
+
+                    break;
+                }
+            }
+
+            
+            return nameList;
         }
 
 
-        public IDataOwnerNameProvider DataOwnerNameProvider { get; }
-
-        public string GetFieldName<TModel>(MemberExpression expression, bool fullTree = false)
+        public static FieldKey GetKey<T, TP>(Expression<Func<T, TP>> expr)
         {
-            if (expression.Member.MemberType == MemberTypes.Property)
+            var nameList = GetPropertySelectionPath(expr);
+            
+            if (nameList.Count < 1)
             {
-                var counts = CountLeafMemberNames<TModel>(fullTree);
+                return null;
+            }
+            
+            nameList.RemoveAt(nameList.Count-1);
+            
+            nameList.Reverse();
 
-                var name = expression.Member.Name;
 
+            var evaluator = new ObjectEvaluator(typeof(T));
 
-                if (counts.ContainsKey(name) && counts[name] > 1)
+            var node = evaluator.RootNode;
+
+            foreach (var name in nameList)
+            {
+                node = node.GetChildren().FirstOrDefault(c => c.Name == name);
+
+                if (node == null)
                 {
-                    name = DataOwnerNameProvider.GetNameForOwnerType(expression.Member.DeclaringType) + "." + name;
+                    return null;
                 }
 
-                return name;
-            }
+                var currentKey = evaluator.Map.FieldKeyByNode(node);
 
-            return null;
-        }
-
-        public FieldKey GetFieldKey<TModel>(MemberExpression expression, bool fullTree = false)
-        {
-            var key = new FieldKey();
-
-            if (expression.Member.MemberType == MemberTypes.Property)
-            {
-                var counts = CountLeafMemberNames<TModel>(fullTree);
-
-                var name = expression.Member.Name;
-
-
-                if (counts.ContainsKey(name) && counts[name] > 1)
+                if (node.IsCollection)
                 {
-                    var parentName = DataOwnerNameProvider.GetNameForOwnerType(expression.Member.DeclaringType);
-
-                    key.Append(new Segment(parentName));
+                    node = node.GetChildren()[0];
                 }
-
-                key.Append(new Segment(name));
             }
+
+            var key = evaluator.Map.FieldKeyByNode(node);
 
             return key;
-        }
-
-        private Dictionary<string, int> CountLeafMemberNames<TModel>(bool fullTree)
-        {
-            var result = new Dictionary<string, int>();
-
-            CountLeafMemberNames(typeof(TModel), result, fullTree);
-
-            return result;
-        }
-
-        private void CountLeafMemberNames(Type type, Dictionary<string, int> result, bool fullTree)
-        {
-            //TODO: cache here
-            var properties = type.GetProperties();
-
-            foreach (var property in properties)
-            {
-                var pType = property.PropertyType;
-                var refType = TypeCheck.IsReferenceType(property.PropertyType);
-                var name = refType ? DataOwnerNameProvider.GetNameForOwnerType(pType) : GetMappedName(property);
-
-                if (refType)
-                {
-                    if (fullTree)
-                    {
-                        CountLeafMemberNames(pType, result, true);
-                    }
-                }
-                else
-                {
-                    if (result.ContainsKey(name))
-                    {
-                        result[name]++;
-                    }
-                    else
-                    {
-                        result.Add(name, 1);
-                    }
-                }
-            }
-        }
-
-        public string GetMappedName(PropertyInfo property)
-        {
-            string name = property.Name;
-            //TODO: Put naming conventions here   
-
-            var attributes = new List<MemberNameAttribute>();
-
-            attributes.AddRange(property.GetCustomAttributes<MemberNameAttribute>());
-
-            if (attributes.Count > 0)
-            {
-                name = attributes.Last().Name;
-            }
-
-            return name;
         }
     }
 }
