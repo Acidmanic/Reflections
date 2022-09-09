@@ -10,6 +10,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Documentation", "Documentation", "{DE100F57-CAAC-4E58-BDCC-E0B11177F4D7}"
 ProjectSection(SolutionItems) = preProject
 	Readme.md = Readme.md
+	Changelog.md = Changelog.md
 EndProjectSection
 EndProject
 Global
