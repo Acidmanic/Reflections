@@ -1,12 +1,13 @@
 using System;
 using System.Reflection;
+using Acidmanic.Utilities.Reflection.Attributes;
 using Acidmanic.Utilities.Reflection.ObjectTree.Evaluators;
 using Acidmanic.Utilities.Reflection.ObjectTree.ObjectTreeNaming;
 using Acidmanic.Utilities.Reflection.Sets;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
-    public class ObjectStructure
+    public static class ObjectStructure
     {
 
         public static AccessNode CreateStructure<TModel>(bool fullTree)
@@ -85,7 +86,9 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             {
                 var pType = property.PropertyType;
 
-                if (!TypeCheck.IsReferenceType(pType) || fullTree)
+                var treatAsLeaf = IsTreatLeaf(property);
+
+                if (!TypeCheck.IsReferenceType(pType) || treatAsLeaf || fullTree)
                 {
                     var evaluator = new FieldEvaluator(property);
 
@@ -97,7 +100,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                     var child = new AccessNode(childName, pType, evaluator, isUnique, isAuto, depth + 1);
 
-                    if (fullTree)
+                    if (fullTree && !treatAsLeaf)
                     {
                         AppendChildren(child, true);
                     }
@@ -105,6 +108,14 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                     node.Add(child);
                 }
             }
+        }
+
+        private static bool IsTreatLeaf(PropertyInfo property)
+        {
+            var treatLeaf = property.GetCustomAttribute<TreatAsLeafAttribute>();
+
+            return treatLeaf != null;
+
         }
     }
 }
