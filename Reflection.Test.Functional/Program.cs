@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd010TreatAsLeafTest().Main();
+            new Tdd011CloneNullNodes().Main();
         }
     }
 }

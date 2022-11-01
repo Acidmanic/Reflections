@@ -201,18 +201,18 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             record.ForEach(dp => Write(dp.Identifier, dp.Value));
         }
 
-        public Record ToStandardFlatData(bool directLeavesOnly = false)
+        public Record ToStandardFlatData(bool excludeNulls = false, bool directLeavesOnly = false)
         {
-            return directLeavesOnly ? GetStandardFlatDataForDirectLeaves() : GetStandardFlatDataFullTree();
+            return directLeavesOnly ? GetStandardFlatDataForDirectLeaves() : GetStandardFlatDataFullTree(excludeNulls);
         }
 
-        private Record GetStandardFlatDataFullTree()
+        private Record GetStandardFlatDataFullTree(bool excludeNulls)
         {
             var standardFlatData = new Record();
 
             var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
 
-            EnumerateStandardLeaves(_rootNode, rootKey, standardFlatData);
+            EnumerateStandardLeaves(_rootNode, rootKey, excludeNulls,standardFlatData);
 
             return standardFlatData;
         }
@@ -265,7 +265,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return standardFlatData;
         }
 
-        private void EnumerateStandardLeaves(AccessNode node, FieldKey nodeKey, List<DataPoint> result)
+        private void EnumerateStandardLeaves(AccessNode node, FieldKey nodeKey,bool excludeNulls, List<DataPoint> result)
         {
             if (node.IsLeaf)
             {
@@ -279,47 +279,52 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
             else
             {
-                if (node.IsCollection)
+                if (!excludeNulls || (Read(nodeKey)!=null))
                 {
-                    var collectionObject = Read(nodeKey);
-
-                    if (collectionObject != null && collectionObject is IList list)
+                    if (node.IsCollection)
                     {
-                        var collection = new ListWrap(list);
+                        var collectionObject = Read(nodeKey);
 
-                        int index = 0;
-
-                        var collectableChildNode = node.GetChildren().First();
-
-                        var collectableChildName = collectableChildNode.Name;
-
-                        foreach (var item in collection)
+                        if (collectionObject != null && collectionObject is IList list)
                         {
-                            var childSegment = Segment.Parse(collectableChildName);
+                            var collection = new ListWrap(list);
 
-                            childSegment.Index = index;
+                            int index = 0;
 
-                            var childKey = nodeKey.Append(childSegment);
+                            var collectableChildNode = node.GetChildren().First();
 
-                            index += 1;
+                            var collectableChildName = collectableChildNode.Name;
 
-                            EnumerateStandardLeaves(collectableChildNode, childKey, result);
+                            foreach (var item in collection)
+                            {
+                                var childSegment = Segment.Parse(collectableChildName);
+
+                                childSegment.Index = index;
+
+                                var childKey = nodeKey.Append(childSegment);
+
+                                index += 1;
+
+                                EnumerateStandardLeaves(collectableChildNode, childKey,excludeNulls, result);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Normal Middle node (Field node)
+
+                        var children = node.GetChildren();
+
+                        foreach (var child in children)
+                        {
+                            var childKey = nodeKey.Append(new Segment(child.Name));
+
+                            EnumerateStandardLeaves(child, childKey,excludeNulls, result);
                         }
                     }
                 }
-                else
-                {
-                    // Normal Middle node (Field node)
-
-                    var children = node.GetChildren();
-
-                    foreach (var child in children)
-                    {
-                        var childKey = nodeKey.Append(new Segment(child.Name));
-
-                        EnumerateStandardLeaves(child, childKey, result);
-                    }
-                }
+                
+                
             }
         }
 

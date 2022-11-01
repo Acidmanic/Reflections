@@ -33,9 +33,9 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 
             var srcEvaluator = new ObjectEvaluator(value);
 
-            var standardData = srcEvaluator.ToStandardFlatData();
+            var standardData = srcEvaluator.ToStandardFlatData(excludeNulls:true);
 
-            var dstEvaluator = new ObjectEvaluator(type);
+            var dstEvaluator = new ObjectEvaluator(new ObjectInstantiator().BlindInstantiate(type));
 
             dstEvaluator.LoadStandardData(standardData);
 
