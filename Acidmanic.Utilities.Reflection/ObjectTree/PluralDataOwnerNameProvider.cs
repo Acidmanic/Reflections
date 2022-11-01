@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Reflection;
 using Acidmanic.Utilities.Reflection.Attributes;
+using CorePluralizer.Extensions;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
@@ -18,12 +19,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             var name = ownerType.Name;
 
-            if (name.EndsWith("s") || name.EndsWith("S"))
-            {
-                name += "e";
-            }
-
-            return name + "s";
+            return name.ToPlural();
         }
     }
 }
