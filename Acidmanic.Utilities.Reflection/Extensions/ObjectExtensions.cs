@@ -6,6 +6,12 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 {
     public static class ObjectExtensions
     {
+        /// <summary>
+        /// Compares two objects using object.Equals() but checks for being equally/un-equally null before that. 
+        /// </summary>
+        /// <param name="o1"></param>
+        /// <param name="o2"></param>
+        /// <returns>True if objects are equal, False if not.</returns>
         public static bool AreEqualAsNullables(this object o1, object o2)
         {
             if (o1 == null && o2 == null)
@@ -21,7 +27,11 @@ namespace Acidmanic.Utilities.Reflection.Extensions
             return o1.Equals(o2);
         }
 
-
+        /// <summary>
+        /// Creates a new instance of an object with all it's properties valued regarding the source object.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns>a copy of given object.</returns>
         public static object Clone(this object value)
         {
             if (value == null)
@@ -33,7 +43,7 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 
             var srcEvaluator = new ObjectEvaluator(value);
 
-            var standardData = srcEvaluator.ToStandardFlatData(excludeNulls:true);
+            var standardData = srcEvaluator.ToStandardFlatData(excludeNulls: true);
 
             var dstEvaluator = new ObjectEvaluator(new ObjectInstantiator().BlindInstantiate(type));
 
@@ -42,6 +52,13 @@ namespace Acidmanic.Utilities.Reflection.Extensions
             return dstEvaluator.RootObject;
         }
 
+        /// <summary>
+        /// First check if both or one of the objects are null, if both not null then checks all properties of both
+        /// objects to be equal recursively.
+        /// </summary>
+        /// <param name="o1"></param>
+        /// <param name="o2"></param>
+        /// <returns>True if objects are equal, False if not.</returns>
         public static bool AreEquivalentsWith(this object o1, object o2)
         {
             if (o1 == null && o2 == null)
@@ -77,23 +94,21 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 
             return true;
         }
-        
+
         public static void CopyInto(this object me, object target)
         {
-            
             var myEvaluator = new ObjectEvaluator(me);
             var tarEvaluator = new ObjectEvaluator(target);
 
 
             var myData = myEvaluator.ToStandardFlatData();
-            
+
             tarEvaluator.LoadStandardData(myData);
         }
-        
-        
-        public static void CopyInto(this object me, object target,params string[] excludedAddresses)
+
+
+        public static void CopyInto(this object me, object target, params string[] excludedAddresses)
         {
-            
             var myEvaluator = new ObjectEvaluator(me);
             var tarEvaluator = new ObjectEvaluator(target);
 
@@ -101,10 +116,10 @@ namespace Acidmanic.Utilities.Reflection.Extensions
             var myData = myEvaluator.ToStandardFlatData();
 
             var filtered = myData.Where(dp => !excludedAddresses.Contains(dp.Identifier));
-            
+
             var srcData = new Record(filtered);
-            
-            
+
+
             tarEvaluator.LoadStandardData(srcData);
         }
     }
