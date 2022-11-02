@@ -201,7 +201,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             record.ForEach(dp => Write(dp.Identifier, dp.Value));
         }
 
-        public Record ToStandardFlatData(bool excludeNulls = false, bool directLeavesOnly = false)
+        public Record ToStandardFlatData(bool directLeavesOnly = false, bool excludeNulls = false)
         {
             return directLeavesOnly ? GetStandardFlatDataForDirectLeaves() : GetStandardFlatDataFullTree(excludeNulls);
         }
@@ -212,7 +212,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
 
-            EnumerateStandardLeaves(_rootNode, rootKey, excludeNulls,standardFlatData);
+            EnumerateStandardLeaves(_rootNode, rootKey, excludeNulls, standardFlatData);
 
             return standardFlatData;
         }
@@ -265,7 +265,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return standardFlatData;
         }
 
-        private void EnumerateStandardLeaves(AccessNode node, FieldKey nodeKey,bool excludeNulls, List<DataPoint> result)
+        private void EnumerateStandardLeaves(AccessNode node, FieldKey nodeKey, bool excludeNulls,
+            List<DataPoint> result)
         {
             if (node.IsLeaf)
             {
@@ -279,7 +280,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
             else
             {
-                if (!excludeNulls || (Read(nodeKey)!=null))
+                if (!excludeNulls || (Read(nodeKey) != null))
                 {
                     if (node.IsCollection)
                     {
@@ -305,7 +306,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                                 index += 1;
 
-                                EnumerateStandardLeaves(collectableChildNode, childKey,excludeNulls, result);
+                                EnumerateStandardLeaves(collectableChildNode, childKey, excludeNulls, result);
                             }
                         }
                     }
@@ -319,12 +320,10 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                         {
                             var childKey = nodeKey.Append(new Segment(child.Name));
 
-                            EnumerateStandardLeaves(child, childKey,excludeNulls, result);
+                            EnumerateStandardLeaves(child, childKey, excludeNulls, result);
                         }
                     }
                 }
-                
-                
             }
         }
 
