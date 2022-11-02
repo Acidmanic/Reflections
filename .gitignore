@@ -1,3 +1,4 @@
 **/bin
 **/obj
 .idea
+Reflection.Test.Functional/TestCaseData/
