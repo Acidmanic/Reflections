@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using Acidmanic.Utilities.Reflection.Extensions;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 {
@@ -20,9 +21,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree.Evaluators
 
         public void Write(object parentObject, object value)
         {
-            var forceCasted = value==null?null: Convert.ChangeType(value, _propertyInfo.PropertyType);
+            var assignable = value.CastTo(_propertyInfo.PropertyType);
             
-            _propertyInfo.SetValue(parentObject, forceCasted);
+            _propertyInfo.SetValue(parentObject, assignable);
         }
+
+        
     }
 }

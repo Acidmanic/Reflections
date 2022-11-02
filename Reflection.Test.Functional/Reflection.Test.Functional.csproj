@@ -6,10 +6,11 @@
 
   <ItemGroup>
     <PackageReference Include="CorePluralizer" Version="1.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="TestCaseData\*">
+    <None Update="TestCaseData\CloneIssue\clone-issue.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

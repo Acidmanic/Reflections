@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using Acidmanic.Utilities.Reflection.ObjectTree;
 using Acidmanic.Utilities.Reflection.ObjectTree.StandardData;
@@ -121,6 +122,33 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 
 
             tarEvaluator.LoadStandardData(srcData);
+        }
+
+        /// <summary>
+        /// This method tries to make sure the returning value is assignable to given target type.
+        ///  If it's somehow inherits from the given type, it will return it without any change. And if
+        /// it's not inherited in any way, then it will try to cast it. 
+        /// </summary>
+        /// <param name="value">value to be casted</param>
+        /// <param name="targetType">the type of assignee variable</param>
+        /// <returns>casted object</returns>
+        public static object CastTo(this object value, Type targetType)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+
+            var sourceType = value.GetType();
+            
+            if (targetType.IsAssignableFrom(sourceType))
+            {
+                return value;
+            }
+
+            var forceCasted = Convert.ChangeType(value, targetType);
+
+            return forceCasted;
         }
     }
 }
