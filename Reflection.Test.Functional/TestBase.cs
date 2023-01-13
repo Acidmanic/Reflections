@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Acidmanic.Utilities.Reflection;
+using Acidmanic.Utilities.Reflection.ObjectTree.StandardData;
 
 namespace Reflection.Test.Functional
 {
@@ -124,6 +125,14 @@ namespace Reflection.Test.Functional
             }
 
             return false;
+        }
+
+        protected void PrintRecord(Record record)
+        {
+            foreach (var dataPoint in record)
+            {
+                Console.WriteLine(dataPoint.Identifier+": " + dataPoint.Value.ToString());
+            }
         }
     }
 }

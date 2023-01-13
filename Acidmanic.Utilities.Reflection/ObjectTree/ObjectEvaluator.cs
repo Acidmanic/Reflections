@@ -67,11 +67,12 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
         }
 
-        private object ReadLeaf(AccessNode leaf, object rootObject, int[] indexMap = null)
+        private object ReadLeaf(AccessNode leaf, object rootObject, int[] indexMap = null, bool castAltered = false)
         {
             if (leaf.IsRoot)
             {
-                return rootObject;
+                //return rootObject;
+                return CastChecked(rootObject, leaf.Type, castAltered);
             }
 
             var parentObject = ReadLeaf(leaf.Parent, rootObject, indexMap);
@@ -83,12 +84,16 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
-                return cEvaluator.Read(parentObject, indexMap);
+                var collectableValue =  cEvaluator.Read(parentObject, indexMap);
+                
+                return CastChecked(collectableValue, leaf.Type, castAltered);
             }
 
             //Read Arrays here i guess
 
-            return leaf.Evaluator.Read(parentObject);
+            var value = leaf.Evaluator.Read(parentObject);
+            
+            return CastChecked(value, leaf.Type, castAltered);
         }
 
         private void WriteLeaf(AccessNode leaf, object rootObject, object value, int[] indexMap = null)
@@ -135,10 +140,10 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                 if (indexMap.Length > 0)
                 {
-                    return ReadLeaf(leaf, _rootObject, indexMap);
+                    return ReadLeaf(leaf, _rootObject, indexMap,castAltered);
                 }
 
-                return ReadLeaf(leaf, _rootObject);
+                return ReadLeaf(leaf, _rootObject,castAltered: castAltered);
             }
 
             return null;
@@ -299,6 +304,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             {
                 return null;
             }
+            
             if (cast)
             {
                 var targetType = type.GetAlteredOrOriginal();

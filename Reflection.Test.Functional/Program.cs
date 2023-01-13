@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd011ClonningIssues().Main();
+            new Tdd012AlteredCasts().Main();
         }
     }
 }
