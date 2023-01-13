@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Acidmanic.Utilities.Reflection.DataSource;
+using Acidmanic.Utilities.Reflection.Extensions;
 using Acidmanic.Utilities.Reflection.ObjectTree.Evaluators;
 using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
 using Acidmanic.Utilities.Reflection.ObjectTree.StandardData;
@@ -122,7 +123,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         }
 
 
-        public object Read(FieldKey key)
+        public object Read(FieldKey key,bool castAltered = false)
         {
             int keyIndex = _nodesMap.IndexOfKey(key, FieldKeyComparisons.IgnoreAllIndexes);
 
@@ -164,13 +165,13 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
         }
 
-        public object Read(string address)
+        public object Read(string address,bool castAltered = false)
         {
             var key = FieldKey.Parse(address);
 
             if (key != null)
             {
-                return Read(key);
+                return Read(key,castAltered);
             }
 
             return null;
@@ -201,23 +202,47 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             record.ForEach(dp => Write(dp.Identifier, dp.Value));
         }
 
-        public Record ToStandardFlatData(bool directLeavesOnly = false, bool excludeNulls = false)
+
+        public Record ToStandardFlatData()
         {
-            return directLeavesOnly ? GetStandardFlatDataForDirectLeaves() : GetStandardFlatDataFullTree(excludeNulls);
+            return ToStandardFlatData(o => { });
         }
 
-        private Record GetStandardFlatDataFullTree(bool excludeNulls)
+        [Obsolete("This method will be removed in later releases. please use other overloads of this method.")]
+        public Record ToStandardFlatData(bool directLeavesOnly = false, bool excludeNulls = false)
+        {
+            return ToStandardFlatData();
+        }
+
+        public Record ToStandardFlatData(Action<IStandardConversionOptionsBuilder> options)
+        {
+            var opt = new StandardConversionOptions();
+
+            options(opt);
+
+            return ToStandardFlatData(opt);
+        }
+
+
+        private Record ToStandardFlatData(StandardConversionOptions options)
+        {
+            return options.DirectLeaves
+                ? GetStandardFlatDataForDirectLeaves(options.CastAltered)
+                : GetStandardFlatDataFullTree(options.ExcludeNullValues,options.CastAltered);
+        }
+
+        private Record GetStandardFlatDataFullTree(bool excludeNulls,bool castAltered)
         {
             var standardFlatData = new Record();
 
             var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
 
-            EnumerateStandardLeaves(_rootNode, rootKey, excludeNulls, standardFlatData);
+            EnumerateStandardLeaves(_rootNode, rootKey, excludeNulls, castAltered,standardFlatData);
 
             return standardFlatData;
         }
 
-        private Record GetStandardFlatDataForDirectLeaves()
+        private Record GetStandardFlatDataForDirectLeaves(bool castAltered)
         {
             var standardFlatData = new Record();
 
@@ -233,7 +258,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                     var collectableChildName = collectableChildNode.Name;
 
-
                     for (int i = 0; i < wrapped.Count; i++)
                     {
                         var value = wrapped[i];
@@ -243,6 +267,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                         childSegment.Index = i;
 
                         var childKey = rootKey.Append(childSegment);
+
+                        value = CastChecked(value, collectableChildNode.Type, castAltered);
 
                         standardFlatData.Add(childKey.ToString(), value);
                     }
@@ -258,6 +284,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                     var value = leaf.Evaluator.Read(_rootObject);
 
+                    value = CastChecked(value, leaf.Type, castAltered);
+                    
                     standardFlatData.Add(childKey.ToString(), value);
                 }
             }
@@ -265,12 +293,28 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return standardFlatData;
         }
 
+        private object CastChecked(object value, Type type, bool cast)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+            if (cast)
+            {
+                var targetType = type.GetAlteredOrOriginal();
+
+                return value.CastTo(targetType);
+            }
+
+            return value;
+        }
+        
         private void EnumerateStandardLeaves(AccessNode node, FieldKey nodeKey, bool excludeNulls,
-            List<DataPoint> result)
+            bool castAltered, List<DataPoint> result)
         {
             if (node.IsLeaf)
             {
-                var value = Read(nodeKey);
+                var value = Read(nodeKey,castAltered);
 
                 result.Add(new DataPoint
                 {
@@ -280,11 +324,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
             else
             {
-                if (!excludeNulls || (Read(nodeKey) != null))
+                if (!excludeNulls || (Read(nodeKey,castAltered) != null))
                 {
                     if (node.IsCollection)
                     {
-                        var collectionObject = Read(nodeKey);
+                        var collectionObject = Read(nodeKey,castAltered);
 
                         if (collectionObject != null && collectionObject is IList list)
                         {
@@ -306,7 +350,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                                 index += 1;
 
-                                EnumerateStandardLeaves(collectableChildNode, childKey, excludeNulls, result);
+                                EnumerateStandardLeaves(collectableChildNode, childKey, excludeNulls,castAltered, result);
                             }
                         }
                     }
@@ -320,7 +364,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                         {
                             var childKey = nodeKey.Append(new Segment(child.Name));
 
-                            EnumerateStandardLeaves(child, childKey, excludeNulls, result);
+                            EnumerateStandardLeaves(child, childKey, excludeNulls,castAltered, result);
                         }
                     }
                 }
