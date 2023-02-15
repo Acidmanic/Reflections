@@ -1,23 +1,22 @@
 using System;
+using System.Linq;
 using System.Reflection;
 using Acidmanic.Utilities.Reflection.Attributes;
 using Acidmanic.Utilities.Reflection.ObjectTree.Evaluators;
 using Acidmanic.Utilities.Reflection.ObjectTree.ObjectTreeNaming;
-using Acidmanic.Utilities.Reflection.Sets;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
     public static class ObjectStructure
     {
-
         public static AccessNode CreateStructure<TModel>(bool fullTree)
         {
             var type = typeof(TModel);
 
             return CreateStructure(type, fullTree);
         }
-        
-        
+
+
         public static AccessNode CreateStructure(Type type, bool fullTree)
         {
             var evaluator = new RootObjectEvaluator();
@@ -66,8 +65,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             var child = new AccessNode(childName, type, evaluator, false, false, node.Depth + 1);
 
             evaluator.SetNodeDepthInformer(() => child.Depth);
-            
-            
+
+
             node.Add(child);
 
             AppendChildren(child, fullTree);
@@ -100,6 +99,10 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                     var child = new AccessNode(childName, pType, evaluator, isUnique, isAuto, depth + 1);
 
+                    var attributes = property.GetCustomAttributes(true).OfType<Attribute>();
+
+                    child.PropertyAttributes.AddRange(attributes);
+
                     if (fullTree && !treatAsLeaf)
                     {
                         AppendChildren(child, true);
@@ -115,7 +118,6 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             var treatLeaf = property.GetCustomAttribute<TreatAsLeafAttribute>();
 
             return treatLeaf != null;
-
         }
     }
 }

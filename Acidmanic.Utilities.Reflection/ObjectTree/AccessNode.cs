@@ -17,6 +17,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
         protected List<AccessNode> Children { get; set; }
 
+        public List<Attribute> PropertyAttributes { get; set; } = new List<Attribute>();
+
         public bool IsLeaf => Children.Count == 0;
 
         public bool IsRoot => Parent == null;
