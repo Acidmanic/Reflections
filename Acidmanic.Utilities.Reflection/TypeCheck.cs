@@ -274,6 +274,37 @@ namespace Acidmanic.Utilities.Reflection
         }
 
         /// <summary>
+        /// Checks to see if the given type, is one of the integral c# builtin types regarding this reference:
+        /// https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types
+        /// (sbyte,byte ,short,ushort,int,uint,long,ulong ,nint,nuint)
+        /// </summary>
+        /// <typeparam name="T">Type to be checked</typeparam>
+        /// <returns>True if T is an integer holding type. False otherwise</returns>
+        public static bool IsIntegral<T>()
+        {
+            return IsIntegral(typeof(T));
+        }
+        /// <summary>
+        /// Checks to see if the given type, is one of the integral c# builtin types regarding this reference:
+        /// https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types
+        /// (sbyte,byte ,short,ushort,int,uint,long,ulong ,nint,nuint)
+        /// </summary>
+        /// <param name="type">Type to be checked</param>
+        /// <returns>True if "type", is an integer holding type. False otherwise</returns>
+        public static bool IsIntegral(Type type)
+        {
+            return type == typeof(sbyte) ||
+                type == typeof(byte) ||
+                type == typeof(short) ||
+                type == typeof(ushort) ||
+                type == typeof(int) ||
+                type == typeof(uint) ||
+                type == typeof(long) ||
+                type == typeof(ulong);
+        }
+        
+        
+        /// <summary>
         /// Checks if type in question, is somehow an implementation or derivation of the given generic type 
         /// </summary>
         /// <param name="specific">The type in question.</param>

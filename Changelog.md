@@ -12,4 +12,5 @@
 
 1.0.6
 -----
-  * property Attributes would be accessible via access-nodes  
+  * property Attributes would be accessible via access-nodes
+  * TypeCheck has new method: IsIntegral(t)
