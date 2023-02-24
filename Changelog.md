@@ -14,3 +14,5 @@
 -----
   * property Attributes would be accessible via access-nodes
   * TypeCheck has new method: IsIntegral(t)
+  * TypeCheck has new method: IsNonIntegral(t)
+  * TypeCheck has new method: IsNumerical(t)

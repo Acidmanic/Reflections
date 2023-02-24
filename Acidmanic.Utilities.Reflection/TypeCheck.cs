@@ -108,6 +108,27 @@ namespace Acidmanic.Utilities.Reflection
                    t != typeof(char);
         }
 
+        /// <summary>
+        /// Checks if the given type is effectively is a primitive, Defining <i>Effectively primitive</i> to be 
+        /// a primitive type or <code>char</code> or <code>string</code>
+        /// </summary>
+        /// <typeparam name="T">Type to be checked.</typeparam>
+        /// <returns>
+        /// True if type is a primitive or <code>char</code> or <code>string</code>. Otherwise returns False
+        /// </returns>
+        public static bool IsEffectivelyPrimitive<T>()
+        {
+            return IsEffectivelyPrimitive(typeof(T));
+        }
+
+        /// <summary>
+        /// Checks if the given type is effectively is a primitive, Defining <i>Effectively primitive</i> to be
+        /// a primitive type or <code>char</code> or <code>string</code>
+        /// </summary>
+        /// <param name="type">Type to be checked.</param>
+        /// <returns>
+        /// True if type is a primitive or <code>char</code> or <code>string</code>. Otherwise returns False
+        /// </returns>
         public static bool IsEffectivelyPrimitive(Type type)
         {
             return !IsReferenceType(type);
@@ -173,7 +194,7 @@ namespace Acidmanic.Utilities.Reflection
 
             if (IsCollection(type))
             {
-                children = new Type[] {GetElementType(type)};
+                children = new Type[] { GetElementType(type) };
             }
             else
             {
@@ -284,6 +305,7 @@ namespace Acidmanic.Utilities.Reflection
         {
             return IsIntegral(typeof(T));
         }
+
         /// <summary>
         /// Checks to see if the given type, is one of the integral c# builtin types regarding this reference:
         /// https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types
@@ -294,16 +316,65 @@ namespace Acidmanic.Utilities.Reflection
         public static bool IsIntegral(Type type)
         {
             return type == typeof(sbyte) ||
-                type == typeof(byte) ||
-                type == typeof(short) ||
-                type == typeof(ushort) ||
-                type == typeof(int) ||
-                type == typeof(uint) ||
-                type == typeof(long) ||
-                type == typeof(ulong);
+                   type == typeof(byte) ||
+                   type == typeof(short) ||
+                   type == typeof(ushort) ||
+                   type == typeof(int) ||
+                   type == typeof(uint) ||
+                   type == typeof(long) ||
+                   type == typeof(ulong);
+        }
+
+        /// <summary>
+        /// Checks to see if the given type, is one of the non-integral numbers in c#.
+        /// (float,double ,decimal)
+        /// </summary>
+        /// <see cref="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types"/>
+        /// <typeparam name="T">Type to be checked</typeparam>
+        /// <returns>True if "type", is a non-integer number holding type. False otherwise</returns>
+        public static bool IsNonIntegerNumber<T>()
+        {
+            return IsNonIntegerNumber(typeof(T));
+        }
+
+        /// <summary>
+        /// Checks to see if the given type, is one of the non-integral numbers in c#.
+        /// (float,double ,decimal)
+        /// </summary>
+        /// <see cref="https://learn.microsoft.com/en-us/dotnet/csharp/language-reference/builtin-types/integral-numeric-types"/>
+        /// <param name="type">Type to be checked</param>
+        /// <returns>True if "type", is a non-integer number holding type. False otherwise</returns>
+        public static bool IsNonIntegerNumber(Type type)
+        {
+            return type == typeof(float) ||
+                   type == typeof(double) ||
+                   type == typeof(decimal);
+        }
+
+        /// <summary>
+        /// Checks to see if the type represents a number.
+        /// </summary>
+        /// <typeparam name="T">The type to be checked.</typeparam>
+        /// <returns>
+        /// True if the type is one of the Integral or non-integral types in c#. Returns False otherwise.
+        /// </returns>
+        public static bool IsNumerical<T>()
+        {
+            return IsNumerical(typeof(T));
         }
         
-        
+        /// <summary>
+        /// Checks to see if the type represents a number.
+        /// </summary>
+        /// <param name="type">The type to be checked.</param>
+        /// <returns>
+        /// True if the type is one of the Integral or non-integral types in c#. Returns False otherwise.
+        /// </returns>
+        public static bool IsNumerical(Type type)
+        {
+            return IsIntegral(type) || IsNonIntegerNumber(type);
+        }
+
         /// <summary>
         /// Checks if type in question, is somehow an implementation or derivation of the given generic type 
         /// </summary>
