@@ -199,5 +199,46 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 
             return methods;
         }
+        
+        public static double AsNumber(this object value, double defaultValue = 0)
+        {
+
+            if (value != null)
+            {
+                var type = value.GetType();
+
+                if (TypeCheck.IsNumerical(type))
+                {
+                    var casted = value.CastTo(typeof(double));
+
+                    if (casted != null)
+                    {
+                        return (double)casted;
+                    }
+                }
+            }
+            return defaultValue;
+        }
+        
+        public static long AsIntegral(this object value, long defaultValue = 0)
+        {
+
+            if (value != null)
+            {
+                var type = value.GetType();
+
+                if (TypeCheck.IsNumerical(type))
+                {
+                    var casted = value.CastTo(typeof(long));
+
+                    if (casted != null)
+                    {
+                        return (long)casted;
+                    }
+                }
+            }
+            return defaultValue;
+        }
+        
     }
 }

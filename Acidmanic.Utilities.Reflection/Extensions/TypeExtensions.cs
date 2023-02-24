@@ -22,5 +22,6 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 
             return type;
         }
+
     }
 }

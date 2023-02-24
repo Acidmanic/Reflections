@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd012AlteredCasts().Main();
+            new Tdd013AsNumberTests().Main();
         }
     }
 }

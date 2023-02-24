@@ -9,6 +9,7 @@ namespace Acidmanic.Utilities.Reflection
     {
         private static readonly Dictionary<Type, bool> IsModelCache = new Dictionary<Type, bool>();
 
+
         public static bool IsCollection(Type type)
         {
             return Implements<ICollection>(type)
@@ -362,7 +363,7 @@ namespace Acidmanic.Utilities.Reflection
         {
             return IsNumerical(typeof(T));
         }
-        
+
         /// <summary>
         /// Checks to see if the type represents a number.
         /// </summary>
