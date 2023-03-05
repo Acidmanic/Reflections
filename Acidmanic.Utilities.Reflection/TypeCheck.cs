@@ -402,5 +402,38 @@ namespace Acidmanic.Utilities.Reflection
                        IsSpecificOf(specific.BaseType, generic)
                    );
         }
+
+        /// <summary>
+        /// Checks if the given type is able to be instantiated using new keyword. 
+        /// </summary>
+        /// <typeparam name="T">Type to be checked.</typeparam>
+        /// <returns>True if the type is newable, False otherwise.</returns>
+        public static bool IsNewable<T>()
+        {
+            return IsNewable(typeof(T));
+        }
+        
+        /// <summary>
+        /// Checks if the given type is able to be instantiated using new keyword. 
+        /// </summary>
+        /// <param name="type">Type to be checked.</param>
+        /// <returns>True if the type is newable, False otherwise.</returns>
+        public static bool IsNewable(Type type)
+        {
+
+            if (type.IsAbstract || type.IsInterface)
+            {
+                return false;
+            }
+            
+            var constructor = type.GetConstructor(new Type[] { });
+
+            if (constructor == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
     }
 }

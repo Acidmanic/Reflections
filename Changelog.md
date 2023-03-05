@@ -17,3 +17,4 @@
   * TypeCheck has new method: IsNonIntegral(t)
   * TypeCheck has new method: IsNumerical(t)
   * TypeExtensions has new method: GetBaseTypeHierarchy(t)
+  * TypeCheck has new method: IsNewable(t)
