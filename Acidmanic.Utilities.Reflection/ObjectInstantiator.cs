@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
+using Acidmanic.Utilities.Reflection.Attributes;
 using Acidmanic.Utilities.Reflection.Extensions;
 
 namespace Acidmanic.Utilities.Reflection
@@ -13,7 +14,7 @@ namespace Acidmanic.Utilities.Reflection
         {
             var type = typeof(TOut);
 
-            return (TOut) CreateObject(type, fullTree);
+            return (TOut)CreateObject(type, fullTree);
         }
 
         public object CreateObject(Type type, bool fullTree)
@@ -146,6 +147,16 @@ namespace Acidmanic.Utilities.Reflection
                     else if (pType.IsArray)
                     {
                         value = Array.CreateInstance(pType.GetElementType() ?? typeof(object), 0);
+                    }
+                    else if (pType == type)
+                    {
+                        // To avoid infinite recursions
+                        value = null;
+                    }
+                    else if (property.GetCustomAttribute<TreatAsLeafAttribute>() != null)
+                    {
+                        // Leafs should not go deeper than one level
+                        value = BlindInstantiate(pType);
                     }
                     else
                     {
