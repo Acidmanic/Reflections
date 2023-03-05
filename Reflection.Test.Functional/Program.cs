@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd014InstantiatingRecursiveObjects().Main();
+            new Tdd015InstantiatingImplicitlyConvertibleObjects().Main();
         }
     }
 }

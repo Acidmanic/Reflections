@@ -20,3 +20,4 @@
   * TypeCheck has new method: IsNewable(t)
   * Infinite recursions for self referencing types has been avoided in ObjectInstantiator
   * Infinite recursions for __TreatAsLeaf__ nodes would be avoided.
+  * ObjectInstantiator can instantiate ampty objects of models with effectively-primitive arguments 

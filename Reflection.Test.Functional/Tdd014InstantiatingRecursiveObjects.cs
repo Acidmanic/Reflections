@@ -39,7 +39,7 @@ namespace Reflection.Test.Functional
             public long Id { get; set; }
             
             [TreatAsLeaf]
-            public BadObject BadProperty { get; set; }
+            public NotThatBadObject BadProperty { get; set; }
         }
         
         public override void Main()
