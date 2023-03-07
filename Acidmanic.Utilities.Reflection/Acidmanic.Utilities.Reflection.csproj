@@ -20,7 +20,7 @@
         <RepositoryType>git</RepositoryType>
         <PackageProjectUrl>https://github.com/Acidmanic/Reflections</PackageProjectUrl>
         <Title>Reflection Utilities</Title>
-
+        <PackageReadmeFile>Readme.md</PackageReadmeFile>
     </PropertyGroup>
 
     <ItemGroup>
@@ -35,6 +35,11 @@
             <PackagePath>LICENSE.txt</PackagePath>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
+        <Content Include="..\Readme.md">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+            <Link>Readme.md</Link>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>
