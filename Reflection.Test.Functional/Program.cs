@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd015InstantiatingImplicitlyConvertibleObjects().Main();
+            new Tdd016FlatDataForAlteredTypedProperties().Main();
         }
     }
 }

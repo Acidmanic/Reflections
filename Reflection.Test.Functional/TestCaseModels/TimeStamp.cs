@@ -1,8 +1,10 @@
 using System;
+using Acidmanic.Utilities.Reflection.Attributes;
 
 namespace Reflection.Test.Functional.TestCaseModels
 {
 
+    [AlteredType(typeof(long))]
     public class TimeStamp
     {
         public long TotalMilliSeconds { get; }

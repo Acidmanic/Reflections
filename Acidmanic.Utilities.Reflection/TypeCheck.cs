@@ -2,19 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 namespace Acidmanic.Utilities.Reflection
 {
     public static class TypeCheck
     {
         private static readonly Dictionary<Type, bool> IsModelCache = new Dictionary<Type, bool>();
-
-
-        public static bool IsCollection(Type type)
-        {
-            return Implements<ICollection>(type)
-                   || Implements(typeof(ICollection<>), type);
-        }
 
         public static bool InheritsFrom<TSuper>(Type type)
         {
@@ -101,6 +95,41 @@ namespace Acidmanic.Utilities.Reflection
             return false;
         }
 
+        /// <summary>
+        /// Checks if type in question, is somehow an implementation or derivation of the given generic type 
+        /// </summary>
+        /// <param name="specific">The type in question.</param>
+        /// <typeparam name="TGeneric">The generic type.</typeparam>
+        /// <returns>True if specific type is a driven type of the generic type. Otherwise returns false.</returns>
+        public static bool IsSpecificOf<TGeneric>(Type specific)
+        {
+            return IsSpecificOf(specific, typeof(TGeneric));
+        }
+
+        /// <summary>
+        /// Checks if type in question, is somehow an implementation or derivation of the given generic type 
+        /// </summary>
+        /// <param name="specific">The type in question.</param>
+        /// <param name="generic">The generic type.</param>
+        /// <returns>True if specific type is a driven type of the generic type. Otherwise returns false.</returns>
+        public static bool IsSpecificOf(Type specific, Type generic)
+        {
+            return specific != null &&
+                   (
+                       (specific.IsGenericType && specific.GetGenericTypeDefinition() == generic)
+                       ||
+                       IsSpecificOf(specific.BaseType, generic)
+                   );
+        }
+
+
+        public static bool IsCollection(Type type)
+        {
+            return Implements<ICollection>(type)
+                   || Implements(typeof(ICollection<>), type);
+        }
+
+
         public static bool IsReferenceType(Type t)
         {
             return !t.IsPrimitive &&
@@ -133,37 +162,6 @@ namespace Acidmanic.Utilities.Reflection
         public static bool IsEffectivelyPrimitive(Type type)
         {
             return !IsReferenceType(type);
-        }
-
-        public static List<Type> EnumerateEntities(Type type)
-        {
-            var result = new List<Type>();
-
-            EnumerateEntities(type, result);
-
-            return result;
-        }
-
-        private static void EnumerateEntities(Type type, List<Type> result)
-        {
-            if (IsReferenceType(type))
-            {
-                if (IsCollection(type))
-                {
-                    type = type.GenericTypeArguments[0];
-                }
-
-                result.Add(type);
-            }
-
-            var properties = type.GetProperties();
-
-            foreach (var property in properties)
-            {
-                var pType = property.PropertyType;
-
-                EnumerateEntities(pType, result);
-            }
         }
 
 
@@ -271,29 +269,6 @@ namespace Acidmanic.Utilities.Reflection
             return true;
         }
 
-        /// <summary>
-        /// Checks if given type is any kind of collection, array and etc. Then returns the type of elements of it.
-        /// </summary>
-        /// <param name="type">The type to be checked.</param>
-        /// <returns>The type of elements of collection/array or null if the type is not any kind of collection.</returns>
-        public static Type GetElementType(Type type)
-        {
-            if (IsCollection(type))
-            {
-                if (type.IsArray)
-                {
-                    return type.GetElementType();
-                }
-                else if (type.GenericTypeArguments.Length > 0)
-                {
-                    return type.GenericTypeArguments[0];
-                }
-
-                return typeof(object);
-            }
-
-            return null;
-        }
 
         /// <summary>
         /// Checks to see if the given type, is one of the integral c# builtin types regarding this reference:
@@ -376,32 +351,6 @@ namespace Acidmanic.Utilities.Reflection
             return IsIntegral(type) || IsNonIntegerNumber(type);
         }
 
-        /// <summary>
-        /// Checks if type in question, is somehow an implementation or derivation of the given generic type 
-        /// </summary>
-        /// <param name="specific">The type in question.</param>
-        /// <typeparam name="TGeneric">The generic type.</typeparam>
-        /// <returns>True if specific type is a driven type of the generic type. Otherwise returns false.</returns>
-        public static bool IsSpecificOf<TGeneric>(Type specific)
-        {
-            return IsSpecificOf(specific, typeof(TGeneric));
-        }
-
-        /// <summary>
-        /// Checks if type in question, is somehow an implementation or derivation of the given generic type 
-        /// </summary>
-        /// <param name="specific">The type in question.</param>
-        /// <param name="generic">The generic type.</param>
-        /// <returns>True if specific type is a driven type of the generic type. Otherwise returns false.</returns>
-        public static bool IsSpecificOf(Type specific, Type generic)
-        {
-            return specific != null &&
-                   (
-                       (specific.IsGenericType && specific.GetGenericTypeDefinition() == generic)
-                       ||
-                       IsSpecificOf(specific.BaseType, generic)
-                   );
-        }
 
         /// <summary>
         /// Checks if the given type is able to be instantiated using new keyword. 
@@ -412,7 +361,7 @@ namespace Acidmanic.Utilities.Reflection
         {
             return IsNewable(typeof(T));
         }
-        
+
         /// <summary>
         /// Checks if the given type is able to be instantiated using new keyword. 
         /// </summary>
@@ -420,12 +369,11 @@ namespace Acidmanic.Utilities.Reflection
         /// <returns>True if the type is newable, False otherwise.</returns>
         public static bool IsNewable(Type type)
         {
-
             if (type.IsAbstract || type.IsInterface)
             {
                 return false;
             }
-            
+
             var constructor = type.GetConstructor(new Type[] { });
 
             if (constructor == null)
@@ -434,6 +382,88 @@ namespace Acidmanic.Utilities.Reflection
             }
 
             return true;
+        }
+
+        public static List<Type> EnumerateEntities(Type type)
+        {
+            var result = new List<Type>();
+
+            EnumerateEntities(type, result);
+
+            return result;
+        }
+
+        private static void EnumerateEntities(Type type, List<Type> result)
+        {
+            if (IsReferenceType(type))
+            {
+                if (IsCollection(type))
+                {
+                    type = type.GenericTypeArguments[0];
+                }
+
+                result.Add(type);
+            }
+
+            var properties = type.GetProperties();
+
+            foreach (var property in properties)
+            {
+                var pType = property.PropertyType;
+
+                EnumerateEntities(pType, result);
+            }
+        }
+
+        /// <summary>
+        /// Checks if given type is any kind of collection, array and etc. Then returns the type of elements of it.
+        /// </summary>
+        /// <param name="type">The type to be checked.</param>
+        /// <returns>The type of elements of collection/array or null if the type is not any kind of collection.</returns>
+        public static Type GetElementType(Type type)
+        {
+            if (IsCollection(type))
+            {
+                if (type.IsArray)
+                {
+                    return type.GetElementType();
+                }
+                else if (type.GenericTypeArguments.Length > 0)
+                {
+                    return type.GenericTypeArguments[0];
+                }
+
+                return typeof(object);
+            }
+
+            return null;
+        }
+
+
+        public static IEnumerable<MethodInfo> GetStaticConverterLikeMethod(Type sourceType, Type targetType)
+        {
+            var allMethods = new List<MethodInfo>();
+
+            allMethods.AddRange(sourceType.GetMethods());
+            allMethods.AddRange(targetType.GetMethods());
+
+            var converterLikeMethods = allMethods
+                .Where(m => m.IsStatic && m.ReturnType == targetType)
+                .Where(m => m.GetParameters().Length == 1 && m.GetParameters()[0].ParameterType == sourceType);
+
+            return converterLikeMethods;
+        }
+
+        public static IEnumerable<MethodInfo> GetIxplicitOperatorMethods(Type sourceType, Type targetType)
+        {
+            var ixplicitMethods = GetStaticConverterLikeMethod(sourceType, targetType)
+                .Where(m =>
+                {
+                    var lowerName = m.Name.ToLower();
+                    return lowerName == "op_implicit" || lowerName == "op_Explicit";
+                });
+
+            return ixplicitMethods;
         }
     }
 }

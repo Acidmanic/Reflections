@@ -148,11 +148,12 @@ namespace Acidmanic.Utilities.Reflection.Extensions
                 return value;
             }
 
-            var declaredConversions = CastMethods(value.GetType(), targetType);
+            var declaredConversions = TypeCheck.GetIxplicitOperatorMethods
+                    (value.GetType(), targetType).ToList();
 
             if (declaredConversions.Count > 0)
             {
-                return declaredConversions[0](value);
+                return declaredConversions[0].Invoke(null, new []{value});
             }
 
             if (targetType.IsEnum) return Enum.ToObject(targetType, value);
@@ -160,44 +161,6 @@ namespace Acidmanic.Utilities.Reflection.Extensions
             var forceCasted = Convert.ChangeType(value, targetType);
 
             return forceCasted;
-        }
-
-
-        private static List<Func<object, object>> CastMethods(Type sourceType, Type targetType)
-        {
-            var methods = new List<Func<object, object>>();
-
-            var paramTypes = new Type[] { sourceType };
-
-            var targetImplicitCast = targetType.GetMethod("op_Implicit", paramTypes);
-
-            if (targetImplicitCast != null)
-            {
-                methods.Add(value => targetImplicitCast.Invoke(null, new object[] { value }));
-            }
-
-            var targetExplicitCast = targetType.GetMethod("op_Explicit", paramTypes);
-
-            if (targetExplicitCast != null)
-            {
-                methods.Add(value => targetExplicitCast.Invoke(null, new object[] { value }));
-            }
-
-            var sourceImplicitCast = sourceType.GetMethod("op_Implicit", paramTypes);
-
-            if (sourceImplicitCast != null)
-            {
-                methods.Add(value => sourceImplicitCast.Invoke(null, new object[] { value }));
-            }
-
-            var sourceExplicitCast = sourceType.GetMethod("op_Explicit", paramTypes);
-
-            if (sourceExplicitCast != null)
-            {
-                methods.Add(value => sourceExplicitCast.Invoke(null, new object[] { value }));
-            }
-
-            return methods;
         }
         
         public static double AsNumber(this object value, double defaultValue = 0)
