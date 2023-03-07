@@ -35,7 +35,7 @@
             <PackagePath>LICENSE.txt</PackagePath>
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <Content Include="..\Readme.md">
+        <Content Include="../Readme.md" Pack="true" PackagePath="\">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
             <CopyToPublishDirectory>Always</CopyToPublishDirectory>
             <Link>Readme.md</Link>
