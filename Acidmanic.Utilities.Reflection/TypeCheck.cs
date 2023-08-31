@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Acidmanic.Utilities.Reflection.Extensions;
 
 namespace Acidmanic.Utilities.Reflection
 {
@@ -195,9 +196,11 @@ namespace Acidmanic.Utilities.Reflection
             {
                 children = new Type[] { GetElementType(type) };
             }
-            else
+            else 
             {
-                children = type.GetProperties().Select(p => p.PropertyType);
+                children = type.GetProperties()
+                    .Where(p => !p.IsTreatAsALeaf())
+                    .Select(p => p.PropertyType);
             }
 
             foreach (var child in children)
@@ -258,7 +261,7 @@ namespace Acidmanic.Utilities.Reflection
 
                 var pType = property.PropertyType;
 
-                if (IsReferenceType(pType) && !IsModel(pType) && !IsCollection(pType))
+                if (IsReferenceType(pType) && !(property.IsTreatAsALeaf() || IsModel(pType)) && !IsCollection(pType))
                 {
                     Console.WriteLine($"Reference Rejected: {type.Name} because of {pType.Name}");
 

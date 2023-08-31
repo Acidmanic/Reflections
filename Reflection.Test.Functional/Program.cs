@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd016FlatDataForAlteredTypedProperties().Main();
+            new Tdd017CyclicDependencies().Main();
         }
     }
 }
