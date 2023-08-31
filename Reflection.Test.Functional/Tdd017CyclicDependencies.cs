@@ -19,9 +19,9 @@ namespace Reflection.Test.Functional
         
         public override void Main()
         {
-            var hasCyclic = TypeCheck.HasCyclicReferencedDescendants(typeof(Foo));
+            var hasCyclic = TypeCheck.HasCyclicReferencedDescendants(typeof(Foo),true);
 
-            var isModel = TypeCheck.IsModel(typeof(Foo));
+            var isModel = TypeCheck.IsModel(typeof(Foo),true);
             
             Console.WriteLine($"Is Model: {isModel}, Has Cyclic: {hasCyclic}");
         }

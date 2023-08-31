@@ -9,7 +9,7 @@ namespace Acidmanic.Utilities.Reflection
 {
     public static class TypeCheck
     {
-        private static readonly Dictionary<Type, bool> IsModelCache = new Dictionary<Type, bool>();
+        private static readonly Dictionary<string, bool> IsModelCache = new Dictionary<string, bool>();
 
         public static bool InheritsFrom<TSuper>(Type type)
         {
@@ -166,14 +166,14 @@ namespace Acidmanic.Utilities.Reflection
         }
 
 
-        public static bool HasCyclicReferencedDescendants(Type type)
+        public static bool HasCyclicReferencedDescendants(Type type, bool considerTreatAsLeafAnnotations = false)
         {
             var alreadySeens = new List<Type>();
 
-            return HasCyclicReferencedDescendants(type, alreadySeens);
+            return HasCyclicReferencedDescendants(type, alreadySeens,considerTreatAsLeafAnnotations);
         }
 
-        private static bool HasCyclicReferencedDescendants(Type type, List<Type> alreadySeens)
+        private static bool HasCyclicReferencedDescendants(Type type, List<Type> alreadySeens, bool considerTreatAsLeafAnnotations)
         {
             if (!IsReferenceType(type))
             {
@@ -199,13 +199,13 @@ namespace Acidmanic.Utilities.Reflection
             else 
             {
                 children = type.GetProperties()
-                    .Where(p => !p.IsTreatAsALeaf())
+                    .Where(p => !considerTreatAsLeafAnnotations || !p.IsTreatAsALeaf())
                     .Select(p => p.PropertyType);
             }
 
             foreach (var child in children)
             {
-                if (HasCyclicReferencedDescendants(child, alreadySeens))
+                if (HasCyclicReferencedDescendants(child, alreadySeens,considerTreatAsLeafAnnotations))
                 {
                     return true;
                 }
@@ -214,21 +214,23 @@ namespace Acidmanic.Utilities.Reflection
             return false;
         }
 
-        public static bool IsModel(Type type)
+        public static bool IsModel(Type type, bool considerTreatAsLeafAnnotations = false)
         {
-            if (IsModelCache.ContainsKey(type))
+            var key = $"{considerTreatAsLeafAnnotations}:{type.FullName}";
+            
+            if (IsModelCache.ContainsKey(key))
             {
-                return IsModelCache[type];
+                return IsModelCache[key];
             }
 
-            var isModel = IsModelNoneCached(type);
+            var isModel = IsModelNoneCached(type,considerTreatAsLeafAnnotations);
 
-            IsModelCache.Add(type, isModel);
+            IsModelCache.Add(key, isModel);
 
             return isModel;
         }
 
-        private static bool IsModelNoneCached(Type type)
+        private static bool IsModelNoneCached(Type type, bool considerTreatAsLeafAnnotations)
         {
             if (type.IsAbstract || type.IsInterface || type.IsGenericType)
             {
@@ -247,7 +249,7 @@ namespace Acidmanic.Utilities.Reflection
                 return false;
             }
 
-            if (HasCyclicReferencedDescendants(type))
+            if (HasCyclicReferencedDescendants(type,considerTreatAsLeafAnnotations))
             {
                 return false;
             }
@@ -261,7 +263,11 @@ namespace Acidmanic.Utilities.Reflection
 
                 var pType = property.PropertyType;
 
-                if (IsReferenceType(pType) && !(property.IsTreatAsALeaf() || IsModel(pType)) && !IsCollection(pType))
+                var beingAModel = considerTreatAsLeafAnnotations
+                    ? property.IsTreatAsALeaf() || IsModel(pType, true)
+                    : IsModel(pType, false);
+
+                if (IsReferenceType(pType) && !beingAModel && !IsCollection(pType))
                 {
                     Console.WriteLine($"Reference Rejected: {type.Name} because of {pType.Name}");
 
