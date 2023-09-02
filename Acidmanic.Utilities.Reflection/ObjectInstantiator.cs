@@ -242,7 +242,10 @@ namespace Acidmanic.Utilities.Reflection
                         value = CreateObject(pType);
                     }
 
-                    property.SetValue(obj, value);
+                    if (property.CanWrite)
+                    {
+                        property.SetValue(obj, value);    
+                    }
                 }
             }
 
