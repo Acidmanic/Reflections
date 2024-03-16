@@ -10,4 +10,5 @@ namespace Acidmanic.Utilities.Reflection.Casting
         
         object Cast(object value);
     }
+
 }

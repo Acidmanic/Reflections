@@ -54,8 +54,9 @@ namespace Acidmanic.Utilities.Reflection.Utilities
             _values.Add(value);
         }
 
-        public void Remove(TKey1 k1, TKey2 k2, TValue value)
+        public void Remove(TKey1 k1, TKey2 k2)
         {
+            var value = Data[k1][k2];
             Data[k1].Remove(k2);
             _key1s.Remove(k1);
             _key2s.Remove(k2);

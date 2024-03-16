@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Acidmanic.Utilities.Reflection.Casting;
 using Acidmanic.Utilities.Reflection.DataSource;
 using Acidmanic.Utilities.Reflection.Extensions;
 using Acidmanic.Utilities.Reflection.ObjectTree.Evaluators;
@@ -309,7 +310,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             {
                 var targetType = type.GetAlteredOrOriginal();
 
-                return value.CastTo(targetType);
+                return value.CastTo(targetType,CastScope.GetAvailableCasts());
             }
 
             return value;

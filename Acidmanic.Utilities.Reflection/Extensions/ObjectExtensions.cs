@@ -138,21 +138,28 @@ namespace Acidmanic.Utilities.Reflection.Extensions
         /// <param name="castings">A Dictionary Of ICast Objects to be used for casting into different types</param>
         /// <returns>casted object</returns>
         public static object CastTo(this object value, Type targetType,
+            params ICast[] castings)
+        {
+            return CastTo(value, targetType, castings.ToCastingDictionary());
+        }
+
+        /// <summary>
+        /// This method tries to make sure the returning value is assignable to given target type.
+        ///  If it's somehow inherits from the given type, it will return it without any change. And if
+        /// it's not inherited in any way, then it will try to cast it. 
+        /// </summary>
+        /// <param name="value">value to be casted</param>
+        /// <param name="targetType">the type of assignee variable</param>
+        /// <param name="castings">A Dictionary Of ICast Objects to be used for casting into different types</param>
+        /// <returns>casted object</returns>
+        public static object CastTo(this object value, Type targetType,
             IEnumerable<ICast> castings)
         {
             DoubleKeyDictionary<Type, Type, ICast> castingDictionary = null;
 
             if (castings != null)
             {
-                castingDictionary = new DoubleKeyDictionary<Type, Type, ICast>();
-                
-                foreach (var cast in castings)
-                {
-                    if (!castingDictionary.ContainsKey(cast.SourceType, cast.TargetType))
-                    {
-                        castingDictionary.Add(cast.SourceType, cast.TargetType, cast);
-                    }
-                }
+                castingDictionary = castings.ToCastingDictionary();
             }
 
             return CastTo(value, targetType, castingDictionary);
