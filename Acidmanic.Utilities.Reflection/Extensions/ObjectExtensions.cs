@@ -2,8 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using Acidmanic.Utilities.Reflection.Casting;
 using Acidmanic.Utilities.Reflection.ObjectTree;
 using Acidmanic.Utilities.Reflection.ObjectTree.StandardData;
+using Acidmanic.Utilities.Reflection.Utilities;
 
 namespace Acidmanic.Utilities.Reflection.Extensions
 {
@@ -133,8 +135,40 @@ namespace Acidmanic.Utilities.Reflection.Extensions
         /// </summary>
         /// <param name="value">value to be casted</param>
         /// <param name="targetType">the type of assignee variable</param>
+        /// <param name="castings">A Dictionary Of ICast Objects to be used for casting into different types</param>
         /// <returns>casted object</returns>
-        public static object CastTo(this object value, Type targetType)
+        public static object CastTo(this object value, Type targetType,
+            IEnumerable<ICast> castings)
+        {
+            DoubleKeyDictionary<Type, Type, ICast> castingDictionary = null;
+
+            if (castings != null)
+            {
+                castingDictionary = new DoubleKeyDictionary<Type, Type, ICast>();
+                
+                foreach (var cast in castings)
+                {
+                    if (!castingDictionary.ContainsKey(cast.SourceType, cast.TargetType))
+                    {
+                        castingDictionary.Add(cast.SourceType, cast.TargetType, cast);
+                    }
+                }
+            }
+
+            return CastTo(value, targetType, castingDictionary);
+        }
+
+        /// <summary>
+        /// This method tries to make sure the returning value is assignable to given target type.
+        ///  If it's somehow inherits from the given type, it will return it without any change. And if
+        /// it's not inherited in any way, then it will try to cast it. 
+        /// </summary>
+        /// <param name="value">value to be casted</param>
+        /// <param name="targetType">the type of assignee variable</param>
+        /// <param name="castings">A Dictionary Of ICast Objects to be used for casting into different types</param>
+        /// <returns>casted object</returns>
+        public static object CastTo(this object value, Type targetType,
+            DoubleKeyDictionary<Type, Type, ICast> castings = null)
         {
             if (value == null)
             {
@@ -143,17 +177,24 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 
             var sourceType = value.GetType();
 
+            castings ??= new DoubleKeyDictionary<Type, Type, ICast>();
+
+            if (castings.ContainsKey(sourceType, targetType))
+            {
+                return castings[sourceType, targetType].Cast(value);
+            }
+
             if (targetType.IsAssignableFrom(sourceType))
             {
                 return value;
             }
 
             var declaredConversions = TypeCheck.GetIxplicitOperatorMethods
-                    (value.GetType(), targetType).ToList();
+                (value.GetType(), targetType).ToList();
 
             if (declaredConversions.Count > 0)
             {
-                return declaredConversions[0].Invoke(null, new []{value});
+                return declaredConversions[0].Invoke(null, new[] { value });
             }
 
             if (targetType.IsEnum) return Enum.ToObject(targetType, value);
@@ -162,10 +203,9 @@ namespace Acidmanic.Utilities.Reflection.Extensions
 
             return forceCasted;
         }
-        
+
         public static double AsNumber(this object value, double defaultValue = 0)
         {
-
             if (value != null)
             {
                 var type = value.GetType();
@@ -180,12 +220,12 @@ namespace Acidmanic.Utilities.Reflection.Extensions
                     }
                 }
             }
+
             return defaultValue;
         }
-        
+
         public static long AsIntegral(this object value, long defaultValue = 0)
         {
-
             if (value != null)
             {
                 var type = value.GetType();
@@ -200,8 +240,8 @@ namespace Acidmanic.Utilities.Reflection.Extensions
                     }
                 }
             }
+
             return defaultValue;
         }
-        
     }
 }
