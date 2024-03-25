@@ -10,7 +10,7 @@
         <!-- NuGet -->
         <Id>Reflection</Id>
         <PackageId>Acidmanic.Utilities.Reflections</PackageId>
-        <Version>1.0.6-b12</Version>
+        <Version>1.0.6-b13</Version>
         <Authors>Mani Moayedi</Authors>
         <Company>Acidmanic</Company>
         <PackageIcon>graphics/icon.png</PackageIcon>
