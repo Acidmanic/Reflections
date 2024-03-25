@@ -4,37 +4,32 @@ using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
 
 namespace Acidmanic.Utilities.Reflection.FieldInclusion
 {
-    public interface IFieldInclusionMarker<TModel>
+    public interface IFieldInclusionMarker
     {
-
         void Clear();
 
-        IFieldInclusionMarker<TModel> Exclude<TProperty>(Expression<Func<TModel, TProperty>> propertySelector);
-        
-        IFieldInclusionMarker<TModel> Exclude(FieldKey key);
-        
-        IFieldInclusionMarker<TModel> Exclude(string address);
-        
-        IFieldInclusionMarker<TModel> UnExclude<TProperty>(Expression<Func<TModel, TProperty>> propertySelector);
-        
-        IFieldInclusionMarker<TModel> UnExclude(FieldKey key);
-        
-        IFieldInclusionMarker<TModel> UnExclude(string address);
-        
-        
-        
-        IFieldInclusionMarker<TModel> Rename<TProperty>(Expression<Func<TModel, TProperty>> propertySelector, string newName);
-            
-        IFieldInclusionMarker<TModel> Rename(FieldKey key, string newName);
-        
-        IFieldInclusionMarker<TModel> Rename(string address, string newName);
+        IFieldInclusionMarker Exclude<TModel, TProperty>(Expression<Func<TModel, TProperty>> propertySelector);
 
-        IFieldInclusionMarker<TModel> UnRename<TProperty>(Expression<Func<TModel, TProperty>> propertySelector);
-        
-        IFieldInclusionMarker<TModel> UnRename(FieldKey key);
-        
-        IFieldInclusionMarker<TModel> UnRename(string address);
-        
+        IFieldInclusionMarker Exclude(FieldKey key);
 
+        IFieldInclusionMarker Exclude(string address);
+
+        IFieldInclusionMarker UnExclude<TModel, TProperty>(Expression<Func<TModel, TProperty>> propertySelector);
+
+        IFieldInclusionMarker UnExclude(FieldKey key);
+
+        IFieldInclusionMarker UnExclude( string address);
+
+        IFieldInclusionMarker Rename<TModel, TProperty>(Expression<Func<TModel, TProperty>> propertySelector, string newName);
+
+        IFieldInclusionMarker Rename(FieldKey key, string newName);
+
+        IFieldInclusionMarker Rename(string address, string newName);
+
+        IFieldInclusionMarker UnRename<TModel, TProperty>(Expression<Func<TModel, TProperty>> propertySelector);
+
+        IFieldInclusionMarker UnRename(FieldKey key);
+
+        IFieldInclusionMarker UnRename(string address);
     }
 }

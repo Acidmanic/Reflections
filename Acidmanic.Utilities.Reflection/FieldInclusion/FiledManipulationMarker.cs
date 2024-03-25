@@ -6,7 +6,7 @@ using Acidmanic.Utilities.Reflection.ObjectTree.FieldAddressing;
 
 namespace Acidmanic.Utilities.Reflection.FieldInclusion
 {
-    public class FiledManipulationMarker<TModel> : IFieldInclusion<TModel>, IFieldInclusionMarker<TModel>
+    public class FiledManipulationMarker : IFieldInclusion, IFieldInclusionMarker
     {
         private readonly List<FieldKey> _excludedNames;
         private readonly Dictionary<FieldKey, string> _renames;
@@ -18,14 +18,14 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
         }
 
 
-        public IFieldInclusionMarker<TModel> Exclude<TProperty>(Expression<Func<TModel, TProperty>> propertySelector)
+        public IFieldInclusionMarker Exclude<TModel,TProperty>(Expression<Func<TModel, TProperty>> propertySelector)
         {
             var key = MemberOwnerUtilities.GetKey(propertySelector);
-
+            
             return Exclude(key);
         }
 
-        public IFieldInclusionMarker<TModel> Exclude(FieldKey key)
+        public IFieldInclusionMarker Exclude(FieldKey key)
         {
             if (key != null)
             {
@@ -34,47 +34,44 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
             return this;
         }
 
-        public IFieldInclusionMarker<TModel> Exclude(string address)
+        public IFieldInclusionMarker Exclude(string address)
         {
             var key = AddressToKey(address);
-
+            
             return Exclude(key);
         }
 
-        public IFieldInclusionMarker<TModel> UnExclude<TProperty>(
-            Expression<Func<TModel, TProperty>> propertySelector)
+        public IFieldInclusionMarker UnExclude<TModel,TProperty>(Expression<Func<TModel, TProperty>> propertySelector)
         {
             var key = MemberOwnerUtilities.GetKey(propertySelector);
-
+            
             return UnExclude(key);
         }
 
-        public IFieldInclusionMarker<TModel> UnExclude(FieldKey key)
+        public IFieldInclusionMarker UnExclude(FieldKey key)
         {
             if (key!=null && _excludedNames.Contains(key))
             {
                 _excludedNames.Remove(key);
             }
-
             return this;
         }
 
-        public IFieldInclusionMarker<TModel> UnExclude(string address)
+        public IFieldInclusionMarker UnExclude(string address)
         {
             var key = AddressToKey(address);
 
             return UnExclude(key);
         }
 
-        public IFieldInclusionMarker<TModel> Rename<TProperty>(Expression<Func<TModel, TProperty>> propertySelector,
-            string newName)
+        public IFieldInclusionMarker Rename<TModel,TProperty>(Expression<Func<TModel, TProperty>> propertySelector, string newName)
         {
             var key = MemberOwnerUtilities.GetKey(propertySelector);
-
+            
             return Rename(key, newName);
         }
 
-        public IFieldInclusionMarker<TModel> Rename(FieldKey key, string newName)
+        public IFieldInclusionMarker Rename(FieldKey key, string newName)
         {
             if (key != null)
             {
@@ -83,33 +80,31 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
             return this;
         }
 
-        public IFieldInclusionMarker<TModel> Rename(string address, string newName)
+        public IFieldInclusionMarker Rename(string address, string newName)
         {
             var key = AddressToKey(address);
 
             return Rename(key, newName);
         }
 
-        public IFieldInclusionMarker<TModel> UnRename<TProperty>(Expression<Func<TModel, TProperty>> propertySelector)
+        public IFieldInclusionMarker UnRename<TModel,TProperty>(Expression<Func<TModel, TProperty>> propertySelector)
         {
             var key = MemberOwnerUtilities.GetKey(propertySelector);
+            
+            return UnRename(key);
 
-            UnRename(key);
-
-            return this;
         }
 
-        public IFieldInclusionMarker<TModel> UnRename(FieldKey key)
+        public IFieldInclusionMarker UnRename(FieldKey key)
         {
             if (key != null && _renames.ContainsKey(key))
             {
                 _renames.Remove(key);
             }
-
             return this;
         }
 
-        public IFieldInclusionMarker<TModel> UnRename(string address)
+        public IFieldInclusionMarker UnRename(string address)
         {
             var key = AddressToKey(address);
 
@@ -145,7 +140,7 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
         }
 
 
-        public bool IsIncluded<TP>(Expression<Func<TModel, TP>> expr)
+        public bool IsIncluded<TM,TP>(Expression<Func<TM, TP>> expr)
         {
             var key = MemberOwnerUtilities.GetKey(expr);
 
@@ -179,7 +174,7 @@ namespace Acidmanic.Utilities.Reflection.FieldInclusion
             return key.ToString();
         }
 
-        public string GetPracticalName<TProperty>(Expression<Func<TModel, TProperty>> propertySelector)
+        public string GetPracticalName<TM,TProperty>(Expression<Func<TM, TProperty>> propertySelector)
         {
             var key = MemberOwnerUtilities.GetKey(propertySelector);
 

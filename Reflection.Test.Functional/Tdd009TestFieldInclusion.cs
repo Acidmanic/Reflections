@@ -41,13 +41,13 @@ namespace Reflection.Test.Functional
         
         public override void Main()
         {
-            var fieldMarker = new FiledManipulationMarker<Outer>();
+            var fieldMarker = new FiledManipulationMarker();
 
-            fieldMarker.Exclude(o => o.MiddleItem.Inner.Name);
+            fieldMarker.Exclude((Outer o) => o.MiddleItem.Inner.Name);
 
-            Console.WriteLine("MiddleItem.Inner.Name is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Inner.Name));
-            Console.WriteLine("MiddleItem.Inner is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Inner));
-            Console.WriteLine("MiddleItem.Name is included: " + fieldMarker.IsIncluded(o => o.MiddleItem.Name));
+            Console.WriteLine("MiddleItem.Inner.Name is included: " + fieldMarker.IsIncluded((Outer o) => o.MiddleItem.Inner.Name));
+            Console.WriteLine("MiddleItem.Inner is included: " + fieldMarker.IsIncluded((Outer o) => o.MiddleItem.Inner));
+            Console.WriteLine("MiddleItem.Name is included: " + fieldMarker.IsIncluded((Outer o) => o.MiddleItem.Name));
             
         }
     }

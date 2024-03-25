@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd019RecordSupport().Main();
+            new Tdd009TestFieldInclusion().Main();
         }
     }
 }
