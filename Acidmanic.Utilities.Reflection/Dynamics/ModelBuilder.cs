@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using Acidmanic.Utilities.Reflection.ObjectTree;
@@ -9,6 +10,8 @@ namespace Acidmanic.Utilities.Reflection.Dynamics
     {
         private readonly TypeBuilder _typeBuilder;
 
+        
+        private readonly  Dictionary<string,object> _initialValuesByPropertyName;
 
         public ModelBuilder(string typeName, string assemblyName = "DynamicModelsAssembly",
             string moduleName = "DynamicModelsModule")
@@ -19,13 +22,24 @@ namespace Acidmanic.Utilities.Reflection.Dynamics
             var moduleBuilder = assemblyBuilder.DefineDynamicModule(moduleName);
 
             _typeBuilder = moduleBuilder.DefineType(typeName, TypeAttributes.Class);
+
+            _initialValuesByPropertyName = new Dictionary<string, object>();
         }
 
 
+        public ModelBuilder AddProperty(string name, Type type, object value)
+        {
+            AddProperty(_typeBuilder, name, type);
+            
+            _initialValuesByPropertyName.Add(name,value);
+
+            return this;
+        }
+        
         public ModelBuilder AddProperty(string name, Type type)
         {
             AddProperty(_typeBuilder, name, type);
-
+            
             return this;
         }
 
@@ -78,7 +92,19 @@ namespace Acidmanic.Utilities.Reflection.Dynamics
         {
             var type = Build();
 
-            return new ObjectInstantiator().CreateObject(type);
+            var owner =  new ObjectInstantiator().CreateObject(type);
+
+            foreach (var initializer in _initialValuesByPropertyName)
+            {
+                var property = type.GetProperty(initializer.Key);
+
+                if (property != null)
+                {
+                    property.SetValue(owner,initializer.Value);
+                }
+            }
+
+            return owner;
         }
     }
 }
