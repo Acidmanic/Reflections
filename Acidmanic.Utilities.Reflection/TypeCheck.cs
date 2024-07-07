@@ -134,7 +134,7 @@ namespace Acidmanic.Utilities.Reflection
         public static bool IsReferenceType(Type t)
         {
             return !t.IsPrimitive &&
-                   !t.IsValueType &&
+                   !t.IsEnum &&
                    t != typeof(string) &&
                    t != typeof(char);
         }

@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd020ModelBuilderUpdates().Main();
+            new Tdd21StructAccessNodes().Main();
         }
     }
 }
