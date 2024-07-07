@@ -2,22 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Threading;
+using Acidmanic.Utilities.Reflection.Attributes;
 using Acidmanic.Utilities.Reflection.ObjectTree.Evaluators;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
     public class AccessNode
     {
-        public string Name { get; private set; }
+        public string Name { get; }
 
-        public Type Type { get; private set; }
-
+        public Type Type { get; }
+        
+        public Type? AlteredType { get; }
+        
         public AccessNode Parent { get; private set; }
 
-        protected List<AccessNode> Children { get; set; }
+        protected List<AccessNode> Children { get; }
 
-        public List<Attribute> PropertyAttributes { get; set; } = new List<Attribute>();
+        public List<Attribute> PropertyAttributes { get; } = new();
 
         public bool IsLeaf => Children.Count == 0;
 
@@ -26,6 +28,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         public bool IsUnique { get; }
 
         public bool IsAutoValued { get; }
+        
+        public bool IsAlteredType { get; }
 
         public bool IsCollection { get; }
 
@@ -47,6 +51,10 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             IsUnique = isUnique;
 
             IsAutoValued = isAutoValued;
+
+            AlteredType = GetAlteredType(type);
+
+            IsAlteredType = AlteredType != null;
 
             Depth = depth;
 
@@ -80,6 +88,18 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return result;
         }
 
+        private Type? GetAlteredType(Type type)
+        {
+            var attribute = type.GetCustomAttribute<AlteredTypeAttribute>();
+
+            if (attribute is { } a)
+            {
+                return a.AlternativeType;
+            }
+
+            return null;
+        }
+        
         private void EnumerateLeavesBelow(ICollection<AccessNode> result)
         {
             if (IsLeaf && !IsRoot)
@@ -123,13 +143,13 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return GetTopLevelNode(this);
         }
 
-        public List<AccessNode> GetDirectLeaves()
+        public List<AccessNode> GetDirectLeaves(bool alteredTypesAsLeaf=false)
         {
             var directLeaves = new List<AccessNode>();
 
             foreach (var child in Children)
             {
-                if (child.IsLeaf)
+                if (child.IsLeaf || (alteredTypesAsLeaf && child.IsAlteredType && !TypeCheck.IsReferenceType(child.AlteredType)))
                 {
                     directLeaves.Add(child);
                 }

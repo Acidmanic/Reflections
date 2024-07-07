@@ -1,11 +1,14 @@
 using System;
 using System.Linq;
+using Acidmanic.Utilities.Reflection.Attributes;
 using Acidmanic.Utilities.Reflection.ObjectTree;
 
 namespace Reflection.Test.Functional;
 
 public class Tdd21StructAccessNodes : TestBase
 {
+    
+    [AlteredType(typeof(long))]
     private struct Id
     {
         public long Value { get; set; }
@@ -41,7 +44,7 @@ public class Tdd21StructAccessNodes : TestBase
 
         var rootNode = evaluator.RootNode;
 
-        var leaves = rootNode.GetDirectLeaves().Select(l => evaluator.Map.AddressByNode(l));
+        var leaves = rootNode.GetDirectLeaves(true).Select(l => evaluator.Map.AddressByNode(l));
 
         foreach (var leaf in leaves)
         {
