@@ -6,6 +6,7 @@ using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Reflection;
 using Acidmanic.Utilities.Reflection.Attributes;
+using Acidmanic.Utilities.Reflection.Casting;
 using Acidmanic.Utilities.Reflection.Extensions;
 using Acidmanic.Utilities.Reflection.ObjectTree;
 
@@ -105,12 +106,28 @@ namespace Acidmanic.Utilities.Reflection
 
             if (type.GetCustomAttribute<DefaultAttribute>() is { } defaultAttribute)
             {
-                return defaultAttribute.Default;
+
+                try
+                {
+                    return defaultAttribute.Default.CastTo(type, CastScope.GetAvailableCasts());
+                }
+                catch
+                {
+                    /**/
+                }
+
             }
 
             if (type.GetCustomAttribute<DefaultValueAttribute>() is { } defaultValueAttribute)
             {
-                return defaultValueAttribute.Value;
+                try
+                {
+                    return defaultValueAttribute.Value.CastTo(type, CastScope.GetAvailableCasts());
+                }
+                catch
+                {
+                    /**/
+                }
             }
 
             var constructors = type.GetConstructors();
@@ -251,6 +268,11 @@ namespace Acidmanic.Utilities.Reflection
             var obj = BlindInstantiate(type);
 
             if (TypeCheck.IsCollection(type))
+            {
+                return obj;
+            }
+
+            if (type.GetCustomAttribute<DefaultAttribute>() is {})
             {
                 return obj;
             }
