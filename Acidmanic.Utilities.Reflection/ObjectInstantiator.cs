@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -100,6 +101,16 @@ namespace Acidmanic.Utilities.Reflection
             if (TypeCheck.IsEffectivelyPrimitive(type))
             {
                 return InstantiatePrimitive(type);
+            }
+
+            if (type.GetCustomAttribute<DefaultAttribute>() is { } defaultAttribute)
+            {
+                return defaultAttribute.Default;
+            }
+
+            if (type.GetCustomAttribute<DefaultValueAttribute>() is { } defaultValueAttribute)
+            {
+                return defaultValueAttribute.Value;
             }
 
             var constructors = type.GetConstructors();
