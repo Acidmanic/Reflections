@@ -33,70 +33,7 @@ namespace Acidmanic.Utilities.Reflection
 
         public object BlindInstantiate(Type type) => Resolve(type);
         
-        // public object BlindInstantiate(Type type)
-        // {
-        //     if (TypeCheck.IsEffectivelyPrimitive(type))
-        //     {
-        //         return InstantiatePrimitive(type);
-        //     }
-        //
-        //     Func<object> constructor = null;
-        //     
-        //     
-        //     if (type.IsAbstract || type.IsInterface)
-        //     {
-        //         constructor = FindConcreteConstructor(type);
-        //     }
-        //     else
-        //     {
-        //         constructor = FindPrimitiveConstructor(type);
-        //     }
-        //
-        //     object createdObject = null;
-        //
-        //     try
-        //     {
-        //         createdObject = constructor.Invoke();
-        //     }
-        //     catch (Exception _)
-        //     {
-        //     }
-        //
-        //     // Check for cases that a wrong concrete class has been found
-        //     if (createdObject != null && !type.IsInstanceOfType(createdObject))
-        //     {
-        //         createdObject = null;
-        //     }
-        //
-        //     return createdObject;
-        // }
-
-        //
-        // private Func<object> FindPrimitiveConstructor(Type type)
-        // {
-        //     var constructors = type.GetConstructors()
-        //         .OrderBy(c => c.GetParameters().Length);
-        //
-        //     foreach (var constructor in constructors)
-        //     {
-        //         if (IsFullyPrimitive(constructor))
-        //         {
-        //             var parameters = constructor.GetParameters();
-        //
-        //             var values = new object[parameters.Length];
-        //
-        //             for (int i = 0; i < parameters.Length; i++)
-        //             {
-        //                 values[i] = InstantiatePrimitive(parameters[i].ParameterType);
-        //             }
-        //
-        //             return () => constructor.Invoke(values);
-        //         }
-        //     }
-        //
-        //     return null;
-        // }
-
+        
         private object Resolve(Type type)
         {
             if (TypeCheck.IsEffectivelyPrimitive(type))
@@ -169,21 +106,6 @@ namespace Acidmanic.Utilities.Reflection
 
             return default;
         }
-
-        // private bool IsFullyPrimitive(ConstructorInfo constructor)
-        // {
-        //     var parameters = constructor.GetParameters();
-        //
-        //     foreach (var parameter in parameters)
-        //     {
-        //         if (!TypeCheck.IsEffectivelyPrimitive(parameter.ParameterType))
-        //         {
-        //             return false;
-        //         }
-        //     }
-        //
-        //     return true;
-        // }
 
 
         private Func<object> FindConcreteConstructor(Type type)
