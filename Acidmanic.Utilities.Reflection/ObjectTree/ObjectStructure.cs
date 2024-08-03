@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Acidmanic.Utilities.Reflection.Attributes;
@@ -99,9 +100,13 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                     var child = new AccessNode(childName, pType, evaluator, isUnique, isAuto, depth + 1);
 
-                    var attributes = property.GetCustomAttributes(true).OfType<Attribute>();
+                    var directPropertyAttributes = property.GetCustomAttributes(true).OfType<Attribute>();
 
-                    child.PropertyAttributes.AddRange(attributes);
+                    child.PropertyAttributes.AddRange(directPropertyAttributes);
+
+                    var parameterPropertyAttributes = GetParameterCustomAttributes(type, property);
+                    
+                    child.PropertyAttributes.AddRange(parameterPropertyAttributes);
 
                     if (fullTree && !treatAsLeaf)
                     {
@@ -111,6 +116,29 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                     node.Add(child);
                 }
             }
+        }
+
+
+        private static List<Attribute> GetParameterCustomAttributes(Type type, PropertyInfo property)
+        {
+            var allParameters = new List<ParameterInfo>();
+            
+            var constructors = type.GetConstructors();
+
+            foreach (var constructor in constructors)
+            {
+                allParameters.AddRange(constructor.GetParameters());
+            }
+
+            var sameNameAndTypeParameter = allParameters
+                .FirstOrDefault(p => p.Name == property.Name && p.ParameterType == property.PropertyType);
+
+            if (sameNameAndTypeParameter is { } parameter)
+            {
+                return parameter.GetCustomAttributes().ToList();
+            }
+
+            return new List<Attribute>();
         }
 
         private static bool IsTreatLeaf(PropertyInfo property)
