@@ -14,6 +14,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
     public class ObjectEvaluator
     {
+        public delegate void NodeScanner(AccessNode node, FieldKey key, object value, bool isTerminal);
+
         private readonly AccessNode _rootNode;
         private readonly object _rootObject;
         private readonly AddressKeyNodeMap _leavesMap;
@@ -85,15 +87,15 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             if (leaf.Evaluator is CollectableEvaluator cEvaluator)
             {
-                var collectableValue =  cEvaluator.Read(parentObject, indexMap);
-                
+                var collectableValue = cEvaluator.Read(parentObject, indexMap);
+
                 return CastChecked(collectableValue, leaf.Type, castAltered);
             }
 
             //Read Arrays here i guess
 
             var value = leaf.Evaluator.Read(parentObject);
-            
+
             return CastChecked(value, leaf.Type, castAltered);
         }
 
@@ -129,7 +131,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         }
 
 
-        public object Read(FieldKey key,bool castAltered = false)
+        public object Read(FieldKey key, bool castAltered = false)
         {
             int keyIndex = _nodesMap.IndexOfKey(key, FieldKeyComparisons.IgnoreAllIndexes);
 
@@ -141,10 +143,10 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                 if (indexMap.Length > 0)
                 {
-                    return ReadLeaf(leaf, _rootObject, indexMap,castAltered);
+                    return ReadLeaf(leaf, _rootObject, indexMap, castAltered);
                 }
 
-                return ReadLeaf(leaf, _rootObject,castAltered: castAltered);
+                return ReadLeaf(leaf, _rootObject, castAltered: castAltered);
             }
 
             return null;
@@ -171,13 +173,13 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
         }
 
-        public object Read(string address,bool castAltered = false)
+        public object Read(string address, bool castAltered = false)
         {
             var key = FieldKey.Parse(address);
 
             if (key != null)
             {
-                return Read(key,castAltered);
+                return Read(key, castAltered);
             }
 
             return null;
@@ -229,21 +231,27 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return ToStandardFlatData(opt);
         }
 
+        public void ScanNodes(NodeScanner scan, bool castAltered = true)
+        {
+            var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
+
+            ScanNodes(_rootNode, rootKey, _rootObject, scan, castAltered);
+        }
 
         private Record ToStandardFlatData(StandardConversionOptions options)
         {
             return options.DirectLeaves
                 ? GetStandardFlatDataForDirectLeaves(options.CastAltered)
-                : GetStandardFlatDataFullTree(options.ExcludeNullValues,options.CastAltered);
+                : GetStandardFlatDataFullTree(options.ExcludeNullValues, options.CastAltered);
         }
 
-        private Record GetStandardFlatDataFullTree(bool excludeNulls,bool castAltered)
+        private Record GetStandardFlatDataFullTree(bool excludeNulls, bool castAltered)
         {
             var standardFlatData = new Record();
 
             var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
 
-            EnumerateStandardLeaves(_rootNode, rootKey, excludeNulls, castAltered,standardFlatData);
+            EnumerateStandardLeaves(_rootNode, rootKey, excludeNulls, castAltered, standardFlatData);
 
             return standardFlatData;
         }
@@ -291,7 +299,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                     var value = leaf.Evaluator.Read(_rootObject);
 
                     value = CastChecked(value, leaf.Type, castAltered);
-                    
+
                     standardFlatData.Add(childKey.ToString(), value);
                 }
             }
@@ -305,23 +313,72 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             {
                 return null;
             }
-            
+
             if (cast)
             {
                 var targetType = type.GetAlteredOrOriginal();
 
-                return value.CastTo(targetType,CastScope.GetAvailableCasts());
+                return value.CastTo(targetType, CastScope.GetAvailableCasts());
             }
 
             return value;
         }
-        
+
+
+        private void ScanNodes(AccessNode node, FieldKey key, object value, NodeScanner scan, bool castAltered)
+        {
+            var isTerminal = (node.IsLeaf || node.IsAlteredType);
+
+            scan(node, key, value, isTerminal);
+
+            if (!isTerminal && value is { } v)
+            {
+                if (node.IsCollection && v is IList list)
+                {
+                    var collection = new ListWrap(list);
+
+                    int index = 0;
+
+                    var collectableChildNode = node.GetChildren().First();
+
+                    var collectableChildName = collectableChildNode.Name;
+
+                    foreach (var item in collection)
+                    {
+                        var childSegment = Segment.Parse(collectableChildName);
+
+                        childSegment.Index = index;
+
+                        var childKey = key.Append(childSegment);
+
+                        index += 1;
+
+                        ScanNodes(collectableChildNode, childKey, item, scan, castAltered);
+                    }
+                }
+                else
+                {
+                    var children = node.GetChildren();
+
+                    foreach (var child in children)
+                    {
+                        var childKey = key.Append(new Segment(child.Name));
+
+                        var childValue = Read(childKey, castAltered);
+
+                        ScanNodes(child, childKey, childValue, scan, castAltered);
+                    }
+                }
+            }
+        }
+
+
         private void EnumerateStandardLeaves(AccessNode node, FieldKey nodeKey, bool excludeNulls,
             bool castAltered, List<DataPoint> result)
         {
             if (node.IsLeaf)
             {
-                var value = Read(nodeKey,castAltered);
+                var value = Read(nodeKey, castAltered);
 
                 result.Add(new DataPoint
                 {
@@ -331,11 +388,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             }
             else
             {
-                if (!excludeNulls || (Read(nodeKey,castAltered) != null))
+                if (!excludeNulls || (Read(nodeKey, castAltered) != null))
                 {
                     if (node.IsCollection)
                     {
-                        var collectionObject = Read(nodeKey,castAltered);
+                        var collectionObject = Read(nodeKey, castAltered);
 
                         if (collectionObject != null && collectionObject is IList list)
                         {
@@ -357,7 +414,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                                 index += 1;
 
-                                EnumerateStandardLeaves(collectableChildNode, childKey, excludeNulls,castAltered, result);
+                                EnumerateStandardLeaves(collectableChildNode, childKey, excludeNulls, castAltered,
+                                    result);
                             }
                         }
                     }
@@ -371,7 +429,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                         {
                             var childKey = nodeKey.Append(new Segment(child.Name));
 
-                            EnumerateStandardLeaves(child, childKey, excludeNulls,castAltered, result);
+                            EnumerateStandardLeaves(child, childKey, excludeNulls, castAltered, result);
                         }
                     }
                 }
