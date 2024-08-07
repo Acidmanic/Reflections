@@ -231,11 +231,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return ToStandardFlatData(opt);
         }
 
-        public void ScanNodes(NodeScanner scan, bool castAltered = true)
+        public void ScanNodes(NodeScanner nodeOpened,NodeScanner nodeClosed, bool castAltered = true)
         {
             var rootKey = new FieldKey().Append(new Segment(_rootNode.Name));
 
-            ScanNodes(_rootNode, rootKey, _rootObject, scan, castAltered);
+            ScanNodes(_rootNode, rootKey, _rootObject, nodeOpened,nodeClosed, castAltered);
         }
 
         private Record ToStandardFlatData(StandardConversionOptions options)
@@ -325,11 +325,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
         }
 
 
-        private void ScanNodes(AccessNode node, FieldKey key, object value, NodeScanner scan, bool castAltered)
+        private void ScanNodes(AccessNode node, FieldKey key, object value, NodeScanner nodeOpened, NodeScanner nodeClosed, bool castAltered)
         {
             var isTerminal = (node.IsLeaf || node.IsAlteredType);
 
-            scan(node, key, value, isTerminal);
+            nodeOpened(node, key, value, isTerminal);
 
             if (!isTerminal && value is { } v)
             {
@@ -353,7 +353,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                         index += 1;
 
-                        ScanNodes(collectableChildNode, childKey, item, scan, castAltered);
+                        ScanNodes(collectableChildNode, childKey, item, nodeOpened,nodeClosed, castAltered);
                     }
                 }
                 else
@@ -366,10 +366,12 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
                         var childValue = Read(childKey, castAltered);
 
-                        ScanNodes(child, childKey, childValue, scan, castAltered);
+                        ScanNodes(child, childKey, childValue, nodeOpened,nodeClosed, castAltered);
                     }
                 }
             }
+            
+            nodeClosed(node, key, value, isTerminal);
         }
 
 

@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd23RecordsPropertyAttributes().Main();
+            new Tdd24ScanNodes().Main();
         }
     }
 }
