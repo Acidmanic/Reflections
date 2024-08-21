@@ -6,7 +6,7 @@ namespace Reflection.Test.Functional
     {
         static void Main(string[] args)
         {
-            new Tdd24ScanNodes().Main();
+            new Tdd25Parameters().Main();
         }
     }
 }
