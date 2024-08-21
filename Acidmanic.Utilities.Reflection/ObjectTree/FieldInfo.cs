@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Acidmanic.Utilities.Reflection.Attributes;
+using Acidmanic.Utilities.Reflection.Extensions;
 
 namespace Acidmanic.Utilities.Reflection.ObjectTree
 {
@@ -31,7 +32,8 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return Is<AutoValuedMemberAttribute>(property);
         }
 
-        private static bool Is<TAttribute>(PropertyInfo property)
+        
+        private static bool Is<TAttribute>(PropertyInfo? property)
             where TAttribute : Attribute
         {
             if (property == null)
@@ -39,10 +41,11 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
                 return false;
             }
 
-            var attributes = property.GetCustomAttributes<TAttribute>();
+            var attributes = property.GetCustomAttributeParametersIncluded<TAttribute>();
 
-            return attributes.Any();
+            return attributes.Count > 0;
         }
+        
         /// <summary>
         /// Gets Proper name by searching field name Attributes 
         /// </summary>
@@ -55,7 +58,7 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
 
             List<MemberNameAttribute> attributes = new List<MemberNameAttribute>();
 
-            attributes.AddRange(property.GetCustomAttributes<MemberNameAttribute>());
+            attributes.AddRange(property.GetCustomAttributeParametersIncluded<MemberNameAttribute>());
 
             if (attributes.Count > 0)
             {
