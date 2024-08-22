@@ -25,15 +25,31 @@ public class Tdd25Parameters : TestBase
     private record TreatAsLeafRecord([TreatAsLeaf] object Property);
 
     private record MemberNameRecord([MemberName("Lie")] int Property);
-    
+
     private record NoneDataFieldRecord([IgnoreNoneDataNode] int Property);
 
     private class NoneDataFieldClass
     {
-        [IgnoreNoneDataNode]
-        public int Property { get; set; }
+        [IgnoreNoneDataNode] public int Property { get; set; }
     };
 
+    private interface INoneDataFieldClassBase
+    {
+        [IgnoreNoneDataNode] public int Property { get; set; }
+    };
+    
+    private interface INoneDataFieldRecordBase
+    {
+        [IgnoreNoneDataNode] public int Property { get; init; }
+    };
+    
+    private class NoneDataFieldClassDriven:INoneDataFieldClassBase
+    {
+        public int Property { get; set; }
+
+    };
+
+    private record NoneDataFieldRecordDriven(int Property) : INoneDataFieldRecordBase;
 
     public override void Main()
     {
@@ -48,8 +64,12 @@ public class Tdd25Parameters : TestBase
         MemberNameRecord_Should_Has_One_Child_Named_Lie();
 
         NoneDataFieldType_Should_Not_Have_Property<NoneDataFieldRecord>();
-        
+
         NoneDataFieldType_Should_Not_Have_Property<NoneDataFieldClass>();
+        
+        NoneDataFieldType_Should_Not_Have_Property<NoneDataFieldClassDriven>();
+        
+        NoneDataFieldType_Should_Not_Have_Property<NoneDataFieldRecordDriven>();
     }
 
 
@@ -107,8 +127,8 @@ public class Tdd25Parameters : TestBase
 
         if (leaf.Name != "Lie") throw new Exception("Expected a Field here named Lie.");
     }
-    
-    
+
+
     private void NoneDataFieldType_Should_Not_Have_Property<T>()
     {
         var ev = new ObjectEvaluator(typeof(T));
