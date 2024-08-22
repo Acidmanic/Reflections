@@ -32,6 +32,10 @@ namespace Acidmanic.Utilities.Reflection.ObjectTree
             return Is<AutoValuedMemberAttribute>(property);
         }
 
+
+        public static bool IsMarkedAs<TAttribute>(this PropertyInfo? property) 
+            where TAttribute : Attribute =>
+            Is<TAttribute>(property);
         
         private static bool Is<TAttribute>(PropertyInfo? property)
             where TAttribute : Attribute

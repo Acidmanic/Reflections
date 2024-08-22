@@ -25,6 +25,14 @@ public class Tdd25Parameters : TestBase
     private record TreatAsLeafRecord([TreatAsLeaf] object Property);
 
     private record MemberNameRecord([MemberName("Lie")] int Property);
+    
+    private record NoneDataFieldRecord([IgnoreNoneDataNode] int Property);
+
+    private class NoneDataFieldClass
+    {
+        [IgnoreNoneDataNode]
+        public int Property { get; set; }
+    };
 
 
     public override void Main()
@@ -38,6 +46,10 @@ public class Tdd25Parameters : TestBase
         TreatAsLeafRecord_Should_Has_One_TreatAsLeaf_Child();
 
         MemberNameRecord_Should_Has_One_Child_Named_Lie();
+
+        NoneDataFieldType_Should_Not_Have_Property<NoneDataFieldRecord>();
+        
+        NoneDataFieldType_Should_Not_Have_Property<NoneDataFieldClass>();
     }
 
 
@@ -94,5 +106,18 @@ public class Tdd25Parameters : TestBase
         var leaf = ev.RootNode.GetChildren().First();
 
         if (leaf.Name != "Lie") throw new Exception("Expected a Field here named Lie.");
+    }
+    
+    
+    private void NoneDataFieldType_Should_Not_Have_Property<T>()
+    {
+        var ev = new ObjectEvaluator(typeof(T));
+
+        if (ev.RootNode.GetChildren().Count > 0)
+        {
+            throw new Exception(
+                $"{typeof(T).Name} Should not have any leaves " +
+                $"but it had {ev.RootNode.GetChildren().Count}");
+        }
     }
 }
